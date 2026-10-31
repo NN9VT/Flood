@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Thoát Lũ</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#222;font-family:sans-serif;color:#fff;touch-action:none;user-select:none}
+canvas{display:block}
+#hud{position:fixed;top:6px;left:8px;font-size:13px;text-shadow:0 0 3px #000;line-height:1.5;pointer-events:none}
+#menu{position:fixed;inset:0;background:#123d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:16px}
+button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
+#msg{position:fixed;top:38%;width:100%;text-align:center;font-size:26px;text-shadow:0 0 6px #000;pointer-events:none}
+#jb{position:fixed;width:100px;height:100px;margin:-50px 0 0 -50px;border-radius:50px;background:#fff3;display:none;pointer-events:none}
+#jk{position:absolute;left:30px;top:30px;width:40px;height:40px;border-radius:20px;background:#fff8}
+</style></head><body>
+<div id="hud"></div><div id="msg"></div>
+<div id="jb"><div id="jk"></div></div>
+<div id="menu"><h2>🌊 Thoát Lũ <small id="v"></small></h2>
+<div>Cả đội cùng chạy ngược dòng lên đồi trước khi lũ nhấn chìm.<br>Nhặt 3 phao ở hạ lưu để giảm sức đẩy của lũ.</div>
+<input id="code" placeholder="Mã phòng (vd 1234)" maxlength="8" style="text-align:center">
+<button id="bj">Vào / tạo phòng online</button>
+<button id="bs">Chơi một mình (thử)</button>
+<div id="lob"></div><button id="bgo" style="display:none">Bắt đầu</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const VER='ver1.01';
+// Dán cấu hình Firebase (Realtime Database) của bạn vào đây:
+const FB={apiKey:"",authDomain:"",databaseURL:"",projectId:"",appId:""};
+const $=i=>document.getElementById(i);$('v').textContent=VER;
+const RIV=7,T=330,clamp=(v,a=-1,b=1)=>Math.max(a,Math.min(b,v));
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let sc,cam,ren,water,fog,go=false,end=false,seed,t0=0,off=0,np=0,solo=true,db,ref,bx=0,OB=[],PK=[],picks={},others={},allSafe=false,total=1;
+const id=Math.random().toString(36).slice(2,8),me={x:-88,z:-40,y:0,ry:0,s:false};
+let yaw=Math.PI/2,jx=0,jy=0,keys={},last=0,sent=0,swept=0;
+const C1=new THREE.Color(0x9db4c0),C2=new THREE.Color(0x232b31);
+function H(x,z){let h=0;if(Math.abs(z)<RIV)h=-3;if(Math.abs(x-bx)<3&&Math.abs(z)<RIV+.5)h=1.5;if(x>70)h=Math.max(h,Math.min(9,(x-70)*.35));return h}
+function box(w,h,d,c,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));m.position.set(x,y,z);sc.add(m);return m}
+function mk(c){const g=new THREE.Group(),m=new THREE.MeshLambertMaterial({color:c});
+const b=new THREE.Mesh(new THREE.BoxGeometry(.8,1.2,.5),m);b.position.y=.9;
+const h=new THREE.Mesh(new THREE.BoxGeometry(.5,.5,.5),m);h.position.y=1.8;g.add(b,h);sc.add(g);return g}
+function colr(s){let n=0;for(const ch of s)n=n*31+ch.charCodeAt(0);return new THREE.Color().setHSL((n%360)/360,.7,.55)}
+function build(){
+ ren=new THREE.WebGLRenderer({antialias:true});ren.setSize(innerWidth,innerHeight);ren.setPixelRatio(Math.min(devicePixelRatio,2));document.body.prepend(ren.domElement);
+ sc=new THREE.Scene();fog=new THREE.FogExp2(C1,.004);sc.fog=fog;sc.background=C1.clone();
+ cam=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,400);
+ sc.add(new THREE.AmbientLight(0xffffff,.75));const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(30,60,20);sc.add(dl);
+ const R=rng(seed);bx=(R()-.5)*80;
+ box(210,6,100-RIV,0x4f7d3a,0,-3,-(50+RIV/2));box(210,6,100-RIV,0x4f7d3a,0,-3,50+RIV/2);
+ box(210,.5,RIV*2,0x6b5a45,0,-3.25,0);
+ const hl=box(28,.5,210,0x6f8a4a,83.4,4.7,0);hl.rotation.z=Math.atan(.35);box(8,.5,210,0x6f8a4a,99,8.75,0);
+ box(6,.4,RIV*2+2,0x8a6a3f,bx,1.3,0);
+ box(1,12,1,0x33ff66,96,15,0);
+ for(let i=0;i<64;i++){const x=-92+R()*172,z=(R()-.5)*190,w=2+R()*3,d=2+R()*3,h=3+R()*7;
+  if(Math.abs(z)<RIV+3||(Math.abs(x-bx)<7&&Math.abs(z)<30)||(x<-76&&Math.abs(z+40)<16)||x>84)continue;
+  box(w*2,h,d*2,0x8d7f72,x,h/2,z);OB.push({x,z,w,d})}
+ for(let i=0;i<3;i++){const x=-92+R()*35,z=(R()<.5?-1:1)*(15+R()*60),m=box(1.4,1.4,1.4,0xff8800,x,.9,z);PK.push({x,z,m})}
+ water=new THREE.Mesh(new THREE.PlaneGeometry(210,210),new THREE.MeshLambertMaterial({color:0x2a6fa8,transparent:true,opacity:.65}));
+ water.rotation.x=-Math.PI/2;sc.add(water);me.g=mk(colr(id));
+ addEventListener('resize',()=>{ren.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()})}
+function begin(){if(go)return;build();PK.forEach((p,i)=>{if(picks[i])p.m.visible=false});go=true;$('menu').style.display='none';requestAnimationFrame(loop)}
+function srv(){return Date.now()+off}
+function col(p){for(const o of OB){const dx=p.x-o.x,dz=p.z-o.z,ex=o.w+.7,ez=o.d+.7;
+ if(Math.abs(dx)<ex&&Math.abs(dz)<ez){if(ex-Math.abs(dx)<ez-Math.abs(dz))p.x=o.x+(dx<0?-ex:ex);else p.z=o.z+(dz<0?-ez:ez)}}}
+function say(t,ms){$('msg').textContent=t;if(ms)setTimeout(()=>{if(!end)$('msg').textContent=''},ms)}
+function finish(t){end=true;$('msg').textContent=t+' (chạm để chơi lại)';$('msg').style.pointerEvents='auto';$('msg').onclick=()=>location.reload()}
+function checkWin(){if(go&&!end&&allSafe)finish('🎉 Cả đội đã thoát!')}
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;
+ const tt=Math.max(0,(solo?now-t0:srv()-t0)/1000),L=-1+7.5*Math.min(1,tt/T),d=Math.max(0,L-H(me.x,me.z));
+ if(!end&&!me.s){const sf=Math.max(.15,1-.25*d);
+  let ix=jx+(keys.d?1:0)-(keys.a?1:0),iy=jy+(keys.w||keys.ArrowUp?1:0)-(keys.s_||keys.ArrowDown?1:0);
+  const l=Math.hypot(ix,iy);if(l>1){ix/=l;iy/=l}
+  const f=[Math.sin(yaw),Math.cos(yaw)],r=[-f[1],f[0]],dx=f[0]*iy+r[0]*ix,dz=f[1]*iy+r[1]*ix;
+  const push=d*1.2*(Math.abs(me.z)<RIV&&H(me.x,me.z)<0?1.5:1)*(1-.25*np);
+  me.x=clamp(me.x+(dx*7*sf-push)*dt,-99,99);me.z=clamp(me.z+dz*7*sf*dt,-99,99);col(me);
+  if(l>.1)me.ry=Math.atan2(dx,dz);
+  if(d>3.4){me.x=-88;me.z=-45+Math.random()*10;say('🌊 Bị cuốn trôi! Về lại điểm xuất phát',2000)}
+  for(const p of PK){if(p.m.visible&&Math.hypot(p.x-me.x,p.z-me.z)<2.5){p.m.visible=false;const i=PK.indexOf(p);
+   if(solo){picks[i]=true;np=Object.keys(picks).length}else ref.child('picks/'+i).set(true)}}
+  if(me.x>89&&!me.s){me.s=true;say('✅ Bạn đã an toàn! Chờ đồng đội...');if(solo){allSafe=true;checkWin()}}}
+ if(tt>T&&!end&&!allSafe)finish('💀 Lũ đã nhấn chìm cả khu vực');
+ me.y+=(H(me.x,me.z)-me.y)*Math.min(1,dt*12);me.g.position.set(me.x,me.y,me.z);me.g.rotation.y=me.ry;
+ for(const k in others){const o=others[k];o.g.position.x+=(o.x-o.g.position.x)*.2;o.g.position.z+=(o.z-o.g.position.z)*.2;o.g.position.y+=(o.y-o.g.position.y)*.2;o.g.rotation.y=o.ry}
+ water.position.y=L;const k=Math.min(1,tt/T);fog.density=.004+.028*k;fog.color.copy(C1).lerp(C2,k);sc.background.copy(fog.color);
+ cam.position.set(me.x-Math.sin(yaw)*8,me.y+5,me.z-Math.cos(yaw)*8);cam.lookAt(me.x,me.y+1.5,me.z);ren.render(sc,cam);
+ $('hud').innerHTML=`${VER} · ⏱ ${Math.max(0,Math.ceil(T-tt))}s<br>💧 nước chỗ đứng: ${d.toFixed(1)}m<br>🛟 phao: ${np}/3 · ✅ an toàn: ${solo?(me.s?1:0):'?'}/${total}`;
+ if(!solo&&now-sent>100){sent=now;ref.child('players/'+id).set({x:me.x,z:me.z,y:me.y,ry:me.ry,s:me.s})}}
+function join(code){
+ if(!FB.apiKey||typeof firebase==='undefined'){$('lob').textContent='Chưa có cấu hình Firebase trong file (mục FB). Hãy chơi một mình để thử.';return}
+ solo=false;firebase.initializeApp(FB);db=firebase.database();ref=db.ref('escape/'+code);
+ db.ref('.info/serverTimeOffset').on('value',s=>off=s.val()||0);
+ ref.child('seed').transaction(v=>v||(Math.random()*1e9|0)).then(r=>{seed=r.snapshot.val();
+  const me_=ref.child('players/'+id);me_.set({x:-88,z:-40,y:0,ry:0,s:false});me_.onDisconnect().remove();
+  ref.child('picks').on('value',s=>{picks=s.val()||{};np=Object.keys(picks).length;PK.forEach((p,i)=>{if(picks[i])p.m.visible=false})});
+  ref.child('players').on('value',s=>{const v=s.val()||{},ks=Object.keys(v);total=ks.length;$('lob').textContent='Phòng '+code+': '+total+' người';
+   allSafe=total>0&&ks.every(k=>v[k].s);checkWin();
+   if(!go)return;for(const k in others)if(!v[k]){sc.remove(others[k].g);delete others[k]}
+   for(const k of ks){if(k===id)continue;const o=others[k]||(others[k]={g:mk(colr(k))});Object.assign(o,v[k]);if(!o.init){o.init=1;o.g.position.set(o.x,o.y,o.z)}}});
+  ref.child('t0').on('value',s=>{if(s.val()&&!go){t0=s.val();begin()}});$('bgo').style.display='';$('bj').style.display=$('bs').style.display=$('code').style.display='none'})}
+$('bj').onclick=()=>{const c=$('code').value.trim();if(c)join(c);else $('lob').textContent='Nhập mã phòng trước'};
+$('bgo').onclick=()=>ref.child('t0').set(firebase.database.ServerValue.TIMESTAMP);
+$('bs').onclick=()=>{seed=Math.random()*1e9|0;t0=performance.now();solo=true;begin()};
+let tj=null,tr=null,ox=0,oy=0,lx=0;
+addEventListener('touchstart',e=>{if(!go)return;for(const t of e.changedTouches){if(t.clientX<innerWidth/2&&tj===null){tj=t.identifier;ox=t.clientX;oy=t.clientY;const b=$('jb');b.style.display='block';b.style.left=ox+'px';b.style.top=oy+'px'}else if(tr===null){tr=t.identifier;lx=t.clientX}}});
+addEventListener('touchmove',e=>{for(const t of e.changedTouches){if(t.identifier===tj){jx=clamp((t.clientX-ox)/45);jy=clamp((oy-t.clientY)/45);$('jk').style.transform=`translate(${jx*30}px,${-jy*30}px)`}else if(t.identifier===tr){yaw-=(t.clientX-lx)*.006;lx=t.clientX}}});
+const te=e=>{for(const t of e.changedTouches){if(t.identifier===tj){tj=null;jx=jy=0;$('jb').style.display='none'}if(t.identifier===tr)tr=null}};
+addEventListener('touchend',te);addEventListener('touchcancel',te);
+addEventListener('keydown',e=>{const k=e.key==='s'?'s_':e.key;keys[k]=1;if(e.key==='ArrowLeft')yaw+=.1;if(e.key==='ArrowRight')yaw-=.1});
+addEventListener('keyup',e=>{keys[e.key==='s'?'s_':e.key]=0});
+let md=false;addEventListener('mousedown',()=>md=true);addEventListener('mouseup',()=>md=false);addEventListener('mousemove',e=>{if(md)yaw-=e.movementX*.005});
+</script></body></html>
