@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Thoát Lũ</title>
+<title>Thoát Lũ (online mới)</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#222;font-family:sans-serif;color:#fff;touch-action:none;user-select:none}
 canvas{display:block}
@@ -16,26 +16,26 @@ button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
 #mc{position:fixed;left:50%;top:56px;margin-left:-46vw;width:92vw;display:none;pointer-events:none;border:2px solid #fff8}
 </style></head><body>
 <canvas id="rn"></canvas><div id="hud"></div><div id="msg"></div>
-<button id="mu">🔊</button><button id="mb">🗺</button><button id="mp">📍</button><button id="rp">🪢</button><button id="th">🛟</button><button id="rl">🔗</button><canvas id="mc" width="320" height="152"></canvas>
+<button id="mu">🔊</button><button id="lv" style="position:fixed;left:8px;bottom:8px;display:none;z-index:6;background:#0007;color:#fff;font-size:15px;padding:6px 10px">🚪 Rời</button><button id="mb">🗺</button><button id="mp">📍</button><button id="rp">🪢</button><button id="th">🛟</button><button id="rl">🔗</button><canvas id="mc" width="320" height="152"></canvas>
 <div id="jb"><div id="jk"></div></div>
 <div id="menu"><h2>🌊 Thoát Lũ <small id="v"></small></h2>
 <div>Cả đội cùng chạy ngược dòng, qua cầu, lên đồi trước khi lũ nhấn chìm.<br>Nhặt 3 phao tròn ở hạ lưu để giảm sức đẩy của lũ.</div>
-<input id="code" placeholder="Mã phòng (vd 1234)" maxlength="8" style="text-align:center">
-<button id="bj">Vào / tạo phòng online</button>
+<input id="nm" placeholder="Tên của bạn (tuỳ chọn)" maxlength="12" style="text-align:center"><input id="pw" type="password" placeholder="Mật mã chơi online" maxlength="20" style="text-align:center"><input id="code" placeholder="Mã phòng để vào (4 số)" maxlength="8" style="text-align:center">
+<button id="bc">Tạo phòng</button><button id="bj">Vào phòng bằng mã</button><button id="br" style="display:none">Quay lại phòng</button>
 <button id="bs">Chơi một mình (thử)</button>
 <div id="lob"></div><button id="bgo" style="display:none">Bắt đầu</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const VER='ver1.26f';
+const VER='ver1.26m';
 // Dán cấu hình Firebase (Realtime Database) của bạn vào đây:
 const FB={apiKey:"AIzaSyCtWpCTxQDX8QNUPXMv6Z2-0gjNwp0SCS8",authDomain:"xamhuong-82e87.firebaseapp.com",databaseURL:"https://xamhuong-82e87-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"xamhuong-82e87",appId:"1:862412056925:web:44a821b440e0b4f8ade0b4"};
 const $=i=>document.getElementById(i);$('v').textContent=VER;
-const RIV=37.5,RL=22,SPD=5.9,T=820,N=38,NX=80,CS=10,HX=400,HZ=190,clamp=(v,a=-1,b=1)=>Math.max(a,Math.min(b,v)),cix=v=>Math.floor((v+HX)/CS),ciz=v=>Math.floor((v+HZ)/CS);
+const RIV=37.5,RL=22,SPD=5.9,T=1230,N=38,NX=80,CS=10,HX=400,HZ=190,clamp=(v,a=-1,b=1)=>Math.max(a,Math.min(b,v)),cix=v=>Math.floor((v+HX)/CS),ciz=v=>Math.floor((v+HZ)/CS);
 function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-let sc,cam,ren,water,fog,go=false,end=false,seed,t0=0,off=0,np=0,solo=true,db,ref,bx=0,bc=20,HH=new Float32Array(NX*N),RD=new Uint8Array(NX*N),BM=[],bh=2,PK=[],picks={},others={},allSafe=false,total=1,AC,GN={},mapOn=false,lm=0,mapHP=1,showPos=true,SX=-315,SZ=-105,pitch=-.4,lookT=0,rtn=false,TR2=[],pl=[],Lw=-1,SG=[],BT=null,LKS={},LKT={},botsDead=0;
-const id=Math.random().toString(36).slice(2,8),me={x:-315,z:-105,y:0,ry:Math.PI/2,s:false,dr:180,tie:-1,ring:false};
+let sc,cam,ren,water,fog,go=false,end=false,seed,t0=0,off=0,np=0,solo=true,db,ref,bx=0,bc=20,HH=new Float32Array(NX*N),RD=new Uint8Array(NX*N),BM=[],bh=2,PK=[],picks={},others={},allSafe=false,total=1,AC,GN={},mapOn=false,lm=0,mapHP=1,showPos=true,SX=-315,SZ=-105,pitch=-.4,lookT=0,rtn=false,TR2=[],pl=[],Lw=-1,SG=[],BT=null,LKS={},LKT={},botsDead=0,RH=null,room=null,HOSTID=null,PV=null,MYN='';
+const id=(()=>{try{let p=localStorage.getItem('esc_pid');if(!p){p=Math.random().toString(36).slice(2,8);localStorage.setItem('esc_pid',p)}return p}catch(e){return Math.random().toString(36).slice(2,8)}})(),me={x:-315,z:-105,y:0,ry:Math.PI/2,s:false,dr:180,tie:-1,ring:false};
 let yaw=Math.PI/2,jx=0,jy=0,keys={},last=0,sent=0;
 const C1=new THREE.Color(0x8fa3b0),C2=new THREE.Color(0x3a444c),rc=$('rn'),rx=rc.getContext('2d');
 const PAL=[0xa8574a,0xc2b280,0x7d8f9a,0x6f8a6a,0xd9cfc1],TR=Array.from({length:12},()=>[Math.random()*190,Math.random()*70,40+Math.random()*90,3+Math.random()*7]);
@@ -125,7 +125,7 @@ function drawMap(){const c=$('mc').getContext('2d'),s=4,W=NX*s,Hh=N*s,py=z=>Hh-(
  const nt=Math.floor((1-mapHP)*12);c.fillStyle='#1c1c1c';for(let i=0;i<nt;i++){const t=TR[i];c.fillRect(t[0],t[1],t[2],t[3])}
  c.fillStyle='rgba(120,160,200,.3)';for(let i=0;i<nt;i++){const t=TR[i];c.beginPath();c.arc(t[0]+t[2]/2,t[1],t[3]*3,0,7);c.fill()}
  $('mc').style.filter=`blur(${(1-mapHP)*3}px)`;$('mc').style.opacity=.4+.6*mapHP}
-function begin(){if(go)return;build();me.ring=solo||pl.slice().sort()[0]===id;me.took=me.ring;if(solo)spawnBots();$('rp').style.display='block';PK.forEach((p,i)=>{if(picks[i])p.m.visible=false});audio();$('mb').style.display='block';$('mp').style.display=solo?'block':'none';go=true;$('menu').style.display='none';requestAnimationFrame(loop)}
+function begin(){if(go)return;build();if(!me.rj)me.ring=solo||RH===id;me.took=me.ring;if(solo)spawnBots();$('rp').style.display='block';PK.forEach((p,i)=>{if(picks[i])p.m.visible=false});audio();$('mb').style.display='block';$('mp').style.display=solo?'block':'none';go=true;$('menu').style.display='none';requestAnimationFrame(loop)}
 function srv(){return Date.now()+off}
 function col(p){const i0=cix(p.x),j0=ciz(p.z);for(let i=i0-1;i<=i0+1;i++)for(let j=j0-1;j<=j0+1;j++){if(i<0||j<0||i>=NX||j>=N||!HH[i*N+j])continue;
  const ax=-HX+(i+.5)*CS,az=-HZ+(j+.5)*CS,dx=p.x-ax,dz=p.z-az,e=5.5;
@@ -151,6 +151,7 @@ function tieT(){if(!go||end||me.dead)return;
    if(solo){LKT[lb]=bi;o.t=bi}else ref.child('lt/'+lb).set(bi);say('Đã cột dây vào cây, người được cứu sẽ tự bơi vào',1800)}
   return}
  if(me.tie>=0){me.tie=-1;say('Đã tháo dây, có thể buộc lại',1500);return}if(!me.ring){say('Cần có phao (kèm dây) mới buộc được dây',1500);return}if(LKS[id]){say('Dây đang nối với người cứu, chờ họ buông dây',1500);return}let b=-1,bd=5;TR2.forEach((t,i)=>{const q=Math.hypot(t.x-me.x,t.z-me.z);if(q<bd){bd=q;b=i}});if(b>=0)me.tie=b;else say('Cần đứng gần một cây để buộc dây',1500)}
+function pfar(z){return 1-.88*clamp((Math.abs(z)-RIV)/110,0,1)}
 function sl(d){return d<=0?0:d<.95?.35*d/.95:d<1.75?.35+.55*(d-.95)/.8:1}
 function bestT(){let b=null,bs=9;for(const k in others){const o=others[k];if(o.d||o.s||o.r)continue;const dx=o.x-me.x,dz=o.z-me.z,dd=Math.hypot(dx,dz);if(dd>25||dd<.1)continue;let df=Math.atan2(dx,dz)-yaw;df=Math.abs(Math.atan2(Math.sin(df),Math.cos(df)));if(df>1.05)continue;const q=df+dd*.01-(o.f?.6:0)-Math.min(.5,Math.hypot(o.vx||0,o.vz||0)*.05);if(q<bs){bs=q;b=k}}return b}
 let FL=null;
@@ -158,42 +159,49 @@ function throwR(){if(!go||end||me.dead||!me.ring||FL)return;if(me.tie>=0){say('H
  const o=others[k],d0=Math.hypot(o.x-me.x,o.z-me.z),T_=Math.max(.4,d0/20),ex=o.x+(o.vx||0)*T_,ez=o.z+(o.vz||0)*T_;
  const m=ringMesh(.68,.13);sc.add(m);
  FL={m,sx:me.x,sy:me.y+1.4,sz:me.z,ex,ey:o.y+1.2,ez,t:0,T:T_,h:Math.min(4,d0*.12)};me.ring=false;me.tie=-1;say('🛟 Phao bay ra!',1000)}
-function bst(){const bs=Object.values(others).filter(o=>o.bot);if(!bs.length)return '';return ' · 🤖 Đã cứu '+bs.filter(o=>o.s).length+'/'+bs.length+' bot'+(botsDead?' (😢 '+botsDead+' bot đã chết)':'')}
+function endMsg(){const Ls=[];
+ if(solo){Ls.push(me.s?'Bạn đã tới nơi an toàn chờ cứu hộ':'Thật không may, bạn đã không thể vượt qua cơn lũ!')}
+ else{const v=PV||{},ks=Object.keys(v).filter(k=>!(v[k].left||(v[k].on===false&&v[k].offAt&&srv()-v[k].offAt>300000))),nm=k=>v[k].nm||'Người chơi '+(v[k].n||'?'),safe=ks.filter(k=>v[k].s),lost=ks.filter(k=>!v[k].s);
+  if(safe.length)Ls.push((safe.length>1?'Các bạn':(safe[0]===id?'Bạn':nm(safe[0])))+' đã tới nơi an toàn chờ cứu hộ');
+  for(const k of lost)Ls.push('Thật không may, '+(k===id?'bạn':nm(k))+' đã không thể vượt qua cơn lũ!')}
+ return Ls.join('<br>')}
+function bst(){const bs=Object.values(others).filter(o=>o.bot);if(!bs.length)return '';return '<br>🤖 Đã cứu '+bs.filter(o=>o.s).length+'/'+bs.length+' bot'+(botsDead?' (😢 '+botsDead+' bot đã chết)':'')}
 function spawnBots(){const cells=[];for(let i=7;i<74;i++)for(let j=2;j<36;j++)if(RD[i*N+j]&&(j<15||j>22))cells.push([i,j]);
  for(let n=0;n<6;n++){let x,z;if(n===0){x=me.x+4;z=me.z}else{const c=cells[Math.random()*cells.length|0];x=-HX+(c[0]+.5)*CS;z=-HZ+(c[1]+.5)*CS}
   others['bot'+n]={bot:true,g:mk(colr('bot'+n)),rope:rp(),lrope:rp(),mk:mkMk(),x,z,y:0,ry:0}}}
 function dep(x,z,L){return Math.max(0,L-.013*Math.max(0,Math.abs(z)-RIV)-H(x,z))}
 function botAI(q,o,dt,L,k){if(o.d||o.s)return;
  const bx_=me.x-o.x,bz_=me.z-o.z,bd=Math.hypot(bx_,bz_),db=dep(o.x,o.z,L),sfb=Math.max(0,1-sl(db)*(o.r?.2:1));
- const pb=db>=.95?(Math.abs(o.z)<RIV&&H(o.x,o.z)<0?Math.min(28,3.2*db):db*(1.2+2.2*k)):0;o.x-=pb*(LKS[q]?.4:1)*dt;if(pb>0)col(o);
+ const pb=db>=.95?(Math.abs(o.z)<RIV&&H(o.x,o.z)<0?Math.min(28,3.2*db):db*(1.2+2.2*k)*pfar(o.z)):0;o.x-=pb*(LKS[q]?.4:1)*dt;if(pb>0)col(o);
  o.f=db>=1.2?1:0;o.y=db>=1.2?L-.013*Math.max(0,Math.abs(o.z)-RIV)-1.2:H(o.x,o.z);
  o.dw=db>=1.75?(o.dw||0)+dt:Math.max(0,(o.dw||0)-dt*.5);
  if(o.dw>8){o.d=true;botsDead++;say('😢 Một bot đã chết đuối!',2500);delete LKS[q];delete LKT[q];return}
  if(o.x>359&&o.z>RIV&&db<.95){o.s=true;delete LKS[q];delete LKT[q];say('🙂 Một bot đã đến nơi an toàn',1500);return}
- let tx=null,tz=0,sp=SPD*.75*sfb,stop=5;
+ let tx=null,tz=0,sp=SPD*.88*sfb,stop=5;
  if(LKS[q]&&LKT[q]!=null){const t=TR2[LKT[q]];o.t=LKT[q];tx=t.x;tz=t.z;sp=3;stop=3}
  else if(LKS[q]){if(bd>3&&!me.fl){tx=me.x;tz=me.z;sp=5;stop=3}}
  else{o.t=null;
-  if(o.x>290&&o.z>RIV&&db<.95){tx=375;tz=70;sp=SPD*.9*sfb;stop=0}
+  if(o.x>290&&o.z>RIV&&db<.95){tx=375;tz=70;sp=SPD*.95*sfb;stop=0}
   else if(bd<30){o.bt=(o.bt||0)-dt;if(o.bt<=0){o.st=o.st==='p'?'f':(Math.random()<.3?'p':'f');o.bt=o.st==='p'?3+Math.random()*3:6+Math.random()*8}if(o.st!=='p'){tx=me.x;tz=me.z}}
   else{let lead=null;for(const kk in others){const p=others[kk];if(p!==o&&p.bot&&!p.d&&!p.s&&kk<q&&Math.hypot(p.x-o.x,p.z-o.z)<9)lead=p}
    if(lead){tx=lead.x;tz=lead.z;stop=4}
    else{if(!o.wp||Math.hypot(o.wp[0]-o.x,o.wp[1]-o.z)<5||(o.wt=(o.wt||0)+dt)>14){const sg=o.z<0?-1:1;o.wp=[-370+Math.random()*680,sg*(RIV+5+Math.random()*(zl(0)-RIV-30))];o.wt=0}tx=o.wp[0];tz=o.wp[1]}}}
- if(tx!=null){const dx=tx-o.x,dz=tz-o.z,dd=Math.hypot(dx,dz);if(dd>stop){const a0=Math.atan2(dx,dz);let ok=false;for(const da of[0,.8,-.8,1.6,-1.6]){const a=a0+da,ux=Math.sin(a),uz=Math.cos(a);if(dep(o.x+ux*3,o.z+uz*3,L)<.8||db>=.8){o.x+=ux*sp*dt;o.z+=uz*sp*dt;col(o);colT(o);o.ry=a;ok=true;break}}if(!ok)o.wp=null}}}
+ if(tx!=null){const dx=tx-o.x,dz=tz-o.z,dd=Math.hypot(dx,dz);if(dd>stop){const a0=Math.atan2(dx,dz),lim=(tx===me.x&&tz===me.z)?1.4:.8;let ok=false;for(const da of[0,.8,-.8,1.6,-1.6]){const a=a0+da,ux=Math.sin(a),uz=Math.cos(a);if(dep(o.x+ux*3,o.z+uz*3,L)<lim||db>=lim){o.x+=ux*sp*dt;o.z+=uz*sp*dt;col(o);colT(o);o.ry=a;ok=true;break}}if(!ok)o.wp=null}}
+ for(const kk in others){if(kk===q)continue;const p=others[kk];if(p.d||p.s)continue;const sx=o.x-p.x,sz=o.z-p.z,sd=Math.hypot(sx,sz);if(sd<1&&sd>.001){o.x+=sx/sd*(1-sd)/2;o.z+=sz/sd*(1-sd)/2}}}
 function ringUp(g,has,fl){const rh=g.userData.rh;rh.visible=!!has;if(!has)return;rh.rotation.z+=((fl?0:.8)-rh.rotation.z)*.15;rh.position.y+=((fl?1.35:1.05)-rh.position.y)*.15}
 function lk(d){if(rtn&&d>0)return;pitch=clamp(pitch+d,-.75,1.31)}
-function die(){me.dead=true;me.tie=-1;me.g.visible=false;if(solo)finish('💀 Bạn đã bị nước cuốn trôi');else say('💀 Bạn đã chết. Đang xem đồng đội...')}
+function die(){me.dead=true;me.tie=-1;me.g.visible=false;if(solo)finish(endMsg());else say('💀 Bạn đã chết. Đang xem đồng đội...')}
 function say(t,ms){$('msg').textContent=t;if(ms)setTimeout(()=>{if(!end)$('msg').textContent=''},ms)}
-function finish(t){end=true;$('msg').textContent=t+bst()+' (chạm để chơi lại)';$('msg').style.pointerEvents='auto';$('msg').onclick=()=>location.reload()}
-function checkWin(){if(go&&!end&&allSafe)finish('🎉 Cả đội đã thoát!')}
+function finish(t){end=true;if(!solo&&ref){ref.child('state').set('end');ST('esc_room',null)}$('msg').innerHTML=t+bst()+'<br><small>(chạm để chơi lại)</small>';$('msg').style.pointerEvents='auto';$('msg').onclick=()=>location.reload()}
+function checkWin(){if(go&&!end&&allSafe)finish(endMsg())}
 function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;
  const tt=Math.max(0,(solo?now-t0:srv()-t0)/1000),L=-1+7.5*Math.min(1,tt/T),Sw=L-.013*Math.max(0,Math.abs(me.z)-RIV),d=Math.max(0,Sw-H(me.x,me.z)),k=Math.min(1,tt/T);
- if(!end&&!me.s&&!me.dead){const inR=Math.abs(me.z)<RIV&&H(me.x,me.z)<0,pr=inR?Math.min(28,3.2*d):0,wl=d>=.95&&nw(me),sf=Math.max(inR&&!me.ring?.1:0,1-sl(d)*(me.ring?.2:1));
+ if(!end&&!me.s&&!me.dead){const inR=Math.abs(me.z)<RIV&&H(me.x,me.z)<0,pr=inR?Math.min(28,3.2*d):0,wl=d>=.95&&nw(me),sf=Math.max(inR&&!me.ring?.1:0,1-sl(d)*(me.ring?.2:1))*(wl&&d<1.75?1.3:1);
   let ix=jx+(keys.d?1:0)-(keys.a?1:0),iy=jy+(keys.w||keys.ArrowUp?1:0)-(keys.s_||keys.ArrowDown?1:0);
   const l=Math.hypot(ix,iy);if(l>1){ix/=l;iy/=l}
   const f=[Math.sin(yaw),Math.cos(yaw)],r=[-f[1],f[0]],dx=f[0]*iy+r[0]*ix,dz=f[1]*iy+r[1]*ix;
-  const push=(inR?pr:d<.95?0:d*(1.2+2.2*k)*(1-.5*clamp((Math.abs(me.z)-RIV)/120,0,1))*(wl?.6:1))*((me.tie>=0||LKS[id])?.4:1);
-  me.x=clamp(me.x+((inR&&!me.ring?Math.min(0,dx):dx)*SPD*sf-push)*dt,-399,399);me.z=clamp(me.z+dz*SPD*sf*dt,-zl(me.x)+2,zl(me.x)-2);if(d>=1.2&&!inR&&Math.abs(me.z)>RIV)me.z-=Math.sign(me.z)*push*.35*dt;col(me);colT(me);
+  const push=(inR?pr:d<.95?0:d*(1.2+2.2*k)*pfar(me.z)*(wl?.45:1))*((me.tie>=0||LKS[id])?.4:1);
+  me.x=clamp(me.x+((inR&&!me.ring?Math.min(0,dx):dx)*SPD*sf-push)*dt,-399,399);me.z=clamp(me.z+dz*SPD*sf*dt,-zl(me.x)+2,zl(me.x)-2);if(d>=1.2&&!inR&&Math.abs(me.z)>RIV)me.z-=Math.sign(me.z)*push*.35*dt;col(me);colT(me);for(const q in others){const o=others[q];if(o.d||o.s)continue;const dx_=me.x-o.g.position.x,dz_=me.z-o.g.position.z,dd_=Math.hypot(dx_,dz_);if(dd_<1&&dd_>.001){const pn=(1-dd_)/2;me.x+=dx_/dd_*pn;me.z+=dz_/dd_*pn;if(o.bot){o.x-=dx_/dd_*pn;o.z-=dz_/dd_*pn}}}
   if(me.tie>=0){const t=TR2[me.tie],ex=t.x-me.x,ez=t.z-me.z,dd=Math.hypot(ex,ez)||1;
    if((inR||d>=1.2)&&l>.1&&dx*ex+dz*ez>.3*dd*Math.hypot(dx,dz)){const pw=1.5;me.x+=ex/dd*pw*dt;me.z+=ez/dd*pw*dt}
    if(dd>RL){me.x=t.x-ex/dd*RL;me.z=t.z-ez/dd*RL}}
@@ -204,8 +212,8 @@ function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/
   me.fl=d>=1.2;me.dr=d>=1.2?Math.max(0,me.dr-dt):Math.min(180,me.dr+dt*.5);if(me.dr<=0||me.x<-396)die();
   for(const p of PK){if(p.m.visible&&!me.ring&&Math.hypot(p.x-me.x,p.z-me.z)<3.5){p.m.visible=false;me.ring=true;me.took=true;const i=PK.indexOf(p);
    if(solo){picks[i]=true;np=Object.keys(picks).length}else ref.child('picks/'+i).set(true)}}
-  if(me.x>359&&me.z>RIV&&!me.s){me.s=true;say('✅ Bạn đã an toàn! Chờ đồng đội...');if(solo){allSafe=true;checkWin()}}}
- if(tt>T&&!end&&!allSafe)finish('💀 Lũ đã nhấn chìm cả khu vực');
+  if(me.x>359&&me.z>RIV&&!me.s){me.s=true;say('Bạn đã tới nơi an toàn chờ cứu hộ');if(solo){allSafe=true;checkWin()}}}
+ if(tt>T&&!end&&!allSafe)finish(endMsg());
  me.y+=((d>=1.2?Sw-1.2:H(me.x,me.z))-me.y)*Math.min(1,dt*12);me.g.position.set(me.x,me.y,me.z);me.g.rotation.y=me.ry;Lw=L;setRope(me.rope,me.x,me.y,me.z,me.tie);ringUp(me.g,me.ring,me.fl);BT=me.ring?bestT():null;me.mk.visible=false;{const la=LKS[id],A=la&&LKT[id]==null&&others[la]?others[la].g.position:null;if(A)setLine(me.lrope,A.x,A.y+1.2,A.z,me.g.position.x,me.g.position.y+1.2,me.g.position.z);else me.lrope.visible=false}
  for(const o of PK)o.m.position.y=o.gy+.1*Math.sin(now/400+o.x);
  for(const q in others){const o=others[q];if(o.lx!=null){o.vx=(o.vx||0)*.8+((o.g.position.x-o.lx)/Math.max(dt,.001))*.2;o.vz=(o.vz||0)*.8+((o.g.position.z-o.lz)/Math.max(dt,.001))*.2}o.lx=o.g.position.x;o.lz=o.g.position.z}
@@ -227,21 +235,52 @@ function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/
  if(mapOn&&!solo){mapHP-=dt*(1+2*k)/60;if(mapHP<=0){mapHP=0;mapOn=false;$('mc').style.display='none';$('mb').disabled=true;$('mb').textContent='🗺✖';say('🗺 Bản đồ đã ướt rách, không xem được nữa',2500)}}
  if(mapOn&&now-lm>200){lm=now;drawMap()}
  {const nr=Object.keys(LKS).some(b=>LKS[b]===id&&others[b]&&Math.hypot(others[b].g.position.x-me.x,others[b].g.position.z-me.z)<4);$('rp').textContent=nr?'↩️':(me.tie>=0?'🔓':'🪢')}$('th').style.display=(me.ring&&!me.dead)?'block':'none';$('rl').style.display=Object.keys(LKS).some(b=>b===id||LKS[b]===id)?'block':'none';$('hud').innerHTML=`${VER} · ⏱ ${Math.max(0,Math.ceil(T-tt))}s<br>💧 nước chỗ đứng: ${d.toFixed(1)}m${d>=1.2?(nw(me)?' (bám tường)':' (đang trôi)'):''}${me.dr<180?'<br>⏳ đuối sức: '+Math.ceil(me.dr)+'s':''}<br>🛟 ${me.ring?'có phao + dây':'chưa có phao/dây'} · 🪢 ${me.tie>=0?'đã buộc dây':'chưa buộc'} · ✅ an toàn: ${solo?(me.s?1:0):'?'}/${total}`;
- if(!solo&&now-sent>100){sent=now;ref.child('players/'+id).set({x:me.x,z:me.z,y:me.y,ry:me.ry,s:me.s,d:!!me.dead,t:me.tie,r:me.ring?1:0,f:me.fl?1:0})}}
-function join(code){
- if(!FB.apiKey||typeof firebase==='undefined'){$('lob').textContent='Chưa có cấu hình Firebase trong file (mục FB). Hãy chơi một mình để thử.';return}
- solo=false;firebase.initializeApp(FB);db=firebase.database();ref=db.ref('escape/'+code);
- db.ref('.info/serverTimeOffset').on('value',s=>off=s.val()||0);
- ref.child('seed').transaction(v=>v||(Math.random()*1e9|0)).then(r=>{seed=r.snapshot.val();
-  const me_=ref.child('players/'+id);me_.set({x:me.x,z:me.z,y:0,ry:0,s:false});me_.onDisconnect().remove();
-  ref.child('picks').on('value',s=>{picks=s.val()||{};np=Object.keys(picks).length;PK.forEach((p,i)=>{if(picks[i])p.m.visible=false})});
-  ref.child('players').on('value',s=>{const v=s.val()||{},ks=Object.keys(v);total=ks.length;pl=ks;$('lob').textContent='Phòng '+code+': '+total+' người';
-   const al=ks.filter(k=>!v[k].d);allSafe=al.length>0&&al.every(k=>v[k].s);if(go&&!end&&total>0&&!al.length)finish('💀 Cả đội đã chết');checkWin();
-   if(!go)return;for(const k in others)if(!v[k]){sc.remove(others[k].g,others[k].rope,others[k].mk,others[k].lrope);delete others[k]}
-   for(const k of ks){if(k===id)continue;const o=others[k]||(others[k]={g:mk(colr(k)),rope:rp(),lrope:rp(),mk:mkMk()});Object.assign(o,v[k]);if(!o.init){o.init=1;o.g.position.set(o.x,o.y,o.z)}}});
-  ref.child('link').on('value',s=>{LKS=s.val()||{}});ref.child('lt').on('value',s=>{LKT=s.val()||{}});ref.child('take/'+id).on('value',s=>{if(s.val()){ref.child('take/'+id).remove();me.ring=false;me.tie=-1}});ref.child('throw/'+id).on('value',s=>{if(s.val()){ref.child('throw/'+id).remove();if(!me.ring){me.ring=true;say('🛟 Bạn nhận được phao!',2000)}}});ref.child('t0').on('value',s=>{if(s.val()&&!go){t0=s.val();begin()}});$('bgo').style.display='';$('bj').style.display=$('bs').style.display=$('code').style.display='none'})}
-$('bj').onclick=()=>{const c=$('code').value.trim();if(c)join(c);else $('lob').textContent='Nhập mã phòng trước'};
-$('bgo').onclick=()=>ref.child('t0').set(firebase.database.ServerValue.TIMESTAMP);
+ if(!solo&&now-sent>100){sent=now;ref.child('players/'+id).update({x:me.x,z:me.z,y:me.y,ry:me.ry,s:me.s,d:!!me.dead,t:me.tie,r:me.ring?1:0,f:me.fl?1:0})}}
+const lob=t=>{$('lob').textContent=t};
+const PWH='703fc6dd980036eb0ff9cbb507ae46388b367cebd801ceb482da53d7d5de755f';
+async function pwOk(){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode($('pw').value.trim()));if([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')===PWH)return true;lob('Sai mật mã');return false}catch(e){lob('Trình duyệt không kiểm tra được mật mã (hãy mở bằng địa chỉ https)');return false}}
+function FBok(){if(!FB.apiKey||typeof firebase==='undefined'){lob('Chưa có cấu hình Firebase trong file (mục FB). Hãy chơi một mình để thử.');return false}return true}
+function initFB(){if(!db){firebase.initializeApp(FB);db=firebase.database();db.ref('.info/serverTimeOffset').on('value',s=>off=s.val()||0)}}
+const ST=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+function hideMenu(){['bc','bj','br','bs','code','pw','nm'].forEach(i=>$(i).style.display='none');$('lv').style.display='block'}
+function getName(){MYN=($('nm').value||'').replace(/[<>&"'`]/g,'').trim().slice(0,12);ST('esc_name',MYN||null)}
+async function createRoom(){if(!FBok()||!await pwOk())return;getName();initFB();
+ try{const all=(await db.ref('escape').once('value')).val()||{},n=srv();for(const c in all){const q=all[c];if(!q||!q.created||n-q.created>3*3600e3)db.ref('escape/'+c).remove()}}catch(e){}
+ let code;for(let t=0;t<30;t++){code=String(1000+(Math.random()*9000|0));if(!(await db.ref('escape/'+code+'/state').once('value')).val())break}
+ solo=false;room=code;ref=db.ref('escape/'+code);
+ await ref.set({state:'wait',host:id,seed:Math.random()*1e9|0,created:firebase.database.ServerValue.TIMESTAMP});await enter()}
+async function joinRoom(code,rj){if(!FBok())return;if(!rj&&!await pwOk())return;getName();initFB();
+ const r=(await db.ref('escape/'+code).once('value')).val();
+ if(!r||!r.state||r.state==='end'){lob('Phòng không tồn tại hoặc đã kết thúc');ST('esc_room',null);return}
+ const ps=r.players||{},m=ps[id];
+ if(m){if(m.left||(m.on===false&&m.offAt&&srv()-m.offAt>300000)){lob('Bạn đã rời hoặc vắng quá 5 phút, không vào lại được');ST('esc_room',null);return}}
+ else{if(r.state!=='wait'){lob('Ván đã bắt đầu, không vào được');return}if(Object.keys(ps).length>=4){lob('Phòng đã đủ 4 người, hãy dùng mã phòng khác');return}}
+ solo=false;room=code;ref=db.ref('escape/'+code);await enter()}
+async function enter(){seed=(await ref.child('seed').once('value')).val();const me_=ref.child('players/'+id),sn=(await me_.once('value')).val();
+ if(sn){me.x=sn.x;me.z=sn.z;me.y=sn.y||0;me.ring=!!sn.r;me.tie=sn.t==null?-1:sn.t;me.dead=!!sn.d;me.s=!!sn.s;me.rj=true;me_.update({on:true})}
+ else{const c=(await ref.child('players').once('value')).numChildren();await me_.set({n:c+1,nm:MYN,on:true,x:me.x,z:me.z,y:0,ry:0,s:false,d:false,r:0,f:0,t:-1})}
+ db.ref('.info/connected').on('value',s=>{if(s.val()){me_.update({on:true});me_.onDisconnect().update({on:false,offAt:firebase.database.ServerValue.TIMESTAMP})}});
+ ST('esc_room',room);hideMenu();
+ ref.child('host').on('value',s=>{HOSTID=s.val();$('bgo').style.display=(HOSTID===id&&!go)?'':'none'});
+ ref.child('state').on('value',s=>{if(s.val()==null&&!go){alert('Chủ phòng đã hủy phòng');ST('esc_room',null);location.reload()}});
+ ref.child('picks').on('value',s=>{picks=s.val()||{};np=Object.keys(picks).length;PK.forEach((p,i)=>{if(picks[i])p.m.visible=false})});
+ ref.child('rh').on('value',s=>{RH=s.val()});ref.child('link').on('value',s=>{LKS=s.val()||{}});ref.child('lt').on('value',s=>{LKT=s.val()||{}});
+ ref.child('take/'+id).on('value',s=>{if(s.val()){ref.child('take/'+id).remove();me.ring=false;me.tie=-1}});
+ ref.child('throw/'+id).on('value',s=>{if(s.val()){ref.child('throw/'+id).remove();if(!me.ring){me.ring=true;say('🛟 Bạn nhận được phao!',2000)}}});
+ ref.child('players').on('value',s=>{const v=s.val()||{},ks=Object.keys(v),now=srv(),gn=k=>v[k].left||(v[k].on===false&&v[k].offAt&&now-v[k].offAt>300000),act=ks.filter(k=>!gn(k));
+  total=act.length;pl=ks;PV=v;
+  if(!go)$('lob').innerHTML='Phòng <b>'+room+'</b> · '+act.length+'/4 người<br>'+act.map(k=>(v[k].nm||'Người chơi '+(v[k].n||'?'))+(k===HOSTID?' (chủ phòng)':'')+(k===id?' (bạn)':'')).join('<br>')+(HOSTID===id?'':'<br>Chờ chủ phòng bắt đầu...');
+  const al=act.filter(k=>!v[k].d);allSafe=al.length>0&&al.every(k=>v[k].s);
+  if(go&&!end&&act.length&&!al.length)finish(endMsg());
+  checkWin();
+  if(!go)return;
+  for(const k in others)if(!v[k]||gn(k)){sc.remove(others[k].g,others[k].rope,others[k].mk,others[k].lrope);delete others[k]}
+  for(const k of act){if(k===id)continue;const o=others[k]||(others[k]={g:mk(colr(k)),rope:rp(),lrope:rp(),mk:mkMk()});Object.assign(o,v[k]);if(!o.init){o.init=1;o.g.position.set(o.x,o.y,o.z)}}});
+ ref.child('t0').on('value',s=>{if(s.val()&&!go){t0=s.val();begin()}})}
+$('bc').onclick=createRoom;
+$('bj').onclick=()=>{const c=$('code').value.trim();if(!c){lob('Nhập mã phòng trước');return}joinRoom(c)};
+$('bgo').onclick=()=>{if(HOSTID!==id||!pl.length)return;const h=pl[Math.random()*pl.length|0];ref.child('rh').set(h).then(()=>ref.update({state:'play',t0:firebase.database.ServerValue.TIMESTAMP}))};
+$('lv').onclick=()=>{if(!confirm('Rời ván?'))return;if(ref){ref.child('players/'+id).onDisconnect().cancel();if(!go&&HOSTID===id)ref.remove();else if(!go)ref.child('players/'+id).remove();else ref.child('players/'+id).update({left:true,on:false})}ST('esc_room',null);setTimeout(()=>location.reload(),300)};
 $('bs').onclick=()=>{seed=Math.random()*1e9|0;t0=performance.now();solo=true;begin()};
 $('mu').onclick=()=>{if(!AC)return;if(AC.state=='running'){AC.suspend();$('mu').textContent='🔇'}else{AC.resume();$('mu').textContent='🔊'}};
 $('mb').onclick=()=>{mapOn=!mapOn;$('mc').style.display=mapOn?'block':'none';if(mapOn)drawMap()};
@@ -257,4 +296,6 @@ addEventListener('touchend',te);addEventListener('touchcancel',te);
 addEventListener('keydown',e=>{const k=e.key==='s'?'s_':e.key;keys[k]=1;if(e.key==='e')tieT();if(e.key==='q')throwR();if(e.key==='ArrowLeft')yaw+=.1;if(e.key==='ArrowRight')yaw-=.1});
 addEventListener('keyup',e=>{keys[e.key==='s'?'s_':e.key]=0});
 let md=false;addEventListener('mousedown',()=>md=true);addEventListener('mouseup',()=>md=false);addEventListener('mousemove',e=>{if(md){yaw-=e.movementX*.005;lk(-e.movementY*.005)}});
+try{$('nm').value=localStorage.getItem('esc_name')||''}catch(e){}
+(async()=>{let rm=null;try{rm=localStorage.getItem('esc_room')}catch(e){}if(!rm||!FB.apiKey||typeof firebase==='undefined')return;try{initFB();const r=(await db.ref('escape/'+rm).once('value')).val(),m=r&&r.players&&r.players[id];if(r&&r.state==='play'&&m&&!m.left&&!(m.on===false&&m.offAt&&srv()-m.offAt>300000)){$('br').style.display='';$('br').textContent='Quay lại phòng '+rm;$('br').onclick=()=>joinRoom(rm,true)}else ST('esc_room',null)}catch(e){}})();
 </script></body></html>
