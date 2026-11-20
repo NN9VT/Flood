@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Thoát Lũ (online mới)</title>
+<title>Thoát lũ</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#222;font-family:sans-serif;color:#fff;touch-action:none;user-select:none}
 canvas{display:block}
@@ -15,7 +15,7 @@ button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
 #mu,#mb,#mp,#rp,#th,#rl{position:fixed;top:6px;font-size:20px;padding:6px 10px;background:#0006;color:#fff}
 #mu{right:8px}#mb{right:56px;display:none}#mp{right:104px;display:none}#rp{right:152px;display:none}#th{right:200px;display:none}#rl{right:248px;display:none}
 #fb{position:fixed;bottom:8px;right:184px;font-size:15px;padding:6px 10px;background:#0006;color:#fff;display:none;z-index:3}
-#ff,#pm{position:fixed;bottom:8px;font-size:15px;padding:6px 10px;background:#0006;color:#fff;display:none;z-index:3}#ff{right:8px}#pm{right:96px}
+#tb{position:fixed;bottom:0;right:0;display:none;z-index:3;gap:2px}#ff,#pm,#ps{font-size:15px;padding:6px 10px;background:#0006;color:#fff;border-radius:8px 0 0 0}#pm,#ps{border-radius:0}
 #mc{position:fixed;left:50%;top:56px;margin-left:-46vw;width:92vw;display:none;pointer-events:none;border:2px solid #fff8}
 #mm{position:fixed;top:8px;right:8px;width:120px;height:120px;border-radius:50%;border:2px solid #fffa;background:#0007;z-index:3;touch-action:none}
 #bmw{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:94vw;max-width:680px;display:none;z-index:7;touch-action:none;box-shadow:0 0 0 100vmax #000a;border:2px solid #fff8}
@@ -23,23 +23,26 @@ button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
 #mist{position:absolute;left:0;top:0}
 #bmh{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font-size:13px;color:#fff;text-shadow:0 0 3px #000}
 #mu{right:132px;top:8px}
+#menu>div:not(#hlp),#menu>input,#bc,#bj,#br,#bs,#bgo{display:none!important}
+#v{position:fixed;right:8px;bottom:8px;font-size:13px;opacity:.7}
+#hlp{display:none;max-width:420px;font-size:17px;line-height:1.5;background:#0007;padding:12px 16px;border-radius:10px}
 #rp,#th,#fb,#rl{top:auto;right:8px}
 #rp{bottom:52px}#th{bottom:98px}#fb{bottom:144px}#rl{bottom:190px}
 </style></head><body>
 <canvas id="rn"></canvas><div id="hud"></div><div id="msg"></div><div id="rd"></div>
-<button id="mu">🔊</button><button id="ff">⏩ x1</button><button id="pm">+1 phút</button><button id="fb">🔦</button><button id="lv" style="position:fixed;left:8px;bottom:8px;display:none;z-index:6;background:#0007;color:#fff;font-size:15px;padding:6px 10px">🚪 Rời</button><button id="mb">🗺</button><button id="mp">📍</button><button id="rp">🪢</button><button id="th">🛟</button><button id="rl">🔗</button><canvas id="mc" width="320" height="192"></canvas>
+<button id="mu">🔊</button><div id="tb"><button id="ps">⏸</button><button id="pm">+1 phút</button><button id="ff">⏩ x1</button></div><button id="fb">🔦</button><button id="lv" style="position:fixed;left:8px;bottom:8px;display:none;z-index:6;background:#0007;color:#fff;font-size:15px;padding:6px 10px">🚪 Rời</button><button id="mb">🗺</button><button id="mp">📍</button><button id="rp">🪢</button><button id="th">🛟</button><button id="rl">🔗</button><canvas id="mc" width="320" height="192"></canvas>
 <canvas id="mm" width="120" height="120"></canvas><div id="bmw"><canvas id="bm" width="320" height="192"></canvas><canvas id="mist" width="320" height="192"></canvas><div id="bmh">Bấm đúp để thu nhỏ · vuốt ngón tay để lau hơi nước</div></div><div id="jb"><div id="jk"></div></div>
-<div id="menu"><h2>🌊 Thoát Lũ <small id="v"></small></h2>
+<div id="menu"><h2>🌊 Thoát lũ</h2><small id="v"></small>
 <div>Cả đội cùng chạy ngược dòng, qua cầu, lên đồi trước khi lũ nhấn chìm.<br>Nhặt 3 phao tròn ở hạ lưu để giảm sức đẩy của lũ.</div>
 <input id="nm" placeholder="Tên của bạn (tuỳ chọn)" maxlength="12" style="text-align:center"><input id="pw" type="password" placeholder="Mật mã chơi online" maxlength="20" style="text-align:center"><input id="code" placeholder="Mã phòng để vào (4 số)" maxlength="8" style="text-align:center">
 <button id="bc">Tạo phòng</button><button id="bj">Vào phòng bằng mã</button><button id="br" style="display:none">Quay lại phòng</button>
-<button id="bs">Chơi một mình (thử)</button>
+<button id="bs">Chơi một mình (thử)</button><button id="bst">Bắt đầu</button><button id="bhp">...</button><div id="hlp">Trời mưa liên tục nhiều ngày, nước sông bắt đầu dâng cao, hãy cố gắng cứu càng nhiều người càng tốt.</div>
 <div id="lob"></div><button id="bgo" style="display:none">Bắt đầu</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const VER='ver1.26u';
+const VER='ver1.27u';
 // Dán cấu hình Firebase (Realtime Database) của bạn vào đây:
 const FB={apiKey:"AIzaSyCtWpCTxQDX8QNUPXMv6Z2-0gjNwp0SCS8",authDomain:"xamhuong-82e87.firebaseapp.com",databaseURL:"https://xamhuong-82e87-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"xamhuong-82e87",appId:"1:862412056925:web:44a821b440e0b4f8ade0b4"};
 const $=i=>document.getElementById(i);$('v').textContent=VER;
@@ -153,7 +156,7 @@ function drawMap(){const c=$('mc').getContext('2d'),s=4,W=NX*s,Hh=N*s,py=z=>Hh-(
  const nt=Math.floor((1-mapHP)*12);c.fillStyle='#1c1c1c';for(let i=0;i<nt;i++){const t=TR[i];c.fillRect(t[0],t[1],t[2],t[3])}
  c.fillStyle='rgba(120,160,200,.3)';for(let i=0;i<nt;i++){const t=TR[i];c.beginPath();c.arc(t[0]+t[2]/2,t[1],t[3]*3,0,7);c.fill()}
  $('mc').style.filter=`blur(${(1-mapHP)*3}px)`;$('mc').style.opacity=.4+.6*mapHP}
-function begin(){if(go)return;build();if(!me.rj)me.ring=solo||RH===id;me.took=me.ring;if(solo)spawnBots();$('rp').style.display='block';PK.forEach((p,i)=>{if(picks[i])p.m.visible=false});audio();$('mb').style.display='none';$('mp').style.display='none';$('ff').style.display=$('pm').style.display=solo?'block':'none';if(solo)GT=0;go=true;$('menu').style.display='none';requestAnimationFrame(loop)}
+function begin(){if(go)return;build();if(!me.rj)me.ring=solo||RH===id;me.took=me.ring;if(solo)spawnBots();$('rp').style.display='block';PK.forEach((p,i)=>{if(picks[i])p.m.visible=false});audio();$('mb').style.display='none';$('mp').style.display='none';$('tb').style.display=solo?'flex':'none';if(solo)GT=0;go=true;$('menu').style.display='none';requestAnimationFrame(loop)}
 function srv(){return Date.now()+off}
 function col(p){const i0=cix(p.x),j0=ciz(p.z);for(let i=i0-1;i<=i0+1;i++)for(let j=j0-1;j<=j0+1;j++){if(i<0||j<0||i>=NX||j>=N||!HH[i*N+j])continue;
  const ax=-HX+(i+.5)*CS,az=-HZ+(j+.5)*CS,dx=p.x-ax,dz=p.z-az,e=5.5;
@@ -251,7 +254,9 @@ function pathTo(sx,sz,tx,tz,L,lim){const si=cix(sx),sj=ciz(sz),ti=cix(tx),tj=ciz
  const P=[];let c=best;while(c>=0&&pv[c]!==-1){P.push([-HX+((c/N|0)+.5)*CS,-HZ+((c%N)+.5)*CS]);c=pv[c]}P.reverse();return P}
 function seeLight(o,bd){if(!(FLT&&FLH))return false;const dx=o.x-me.x,dz=o.z-me.z;let t=Math.atan2(dx,dz)-yaw;t=Math.abs(Math.atan2(Math.sin(t),Math.cos(t)));if(bd>=40+40*Math.pow(Math.cos(t/2),4))return false;
  for(let q=4;q<bd;q+=4){if(hh(me.x+dx*q/bd,me.z+dz*q/bd)>0)return false}return true}
-function botAI(q,o,dt,L,k){if(o.d||o.s)return;
+function shelterWalk(o,dt){if(!o.sp)o.sp=[379+Math.random()*12,146.5+Math.random()*7];
+ const dx=o.sp[0]-o.x,dz=o.sp[1]-o.z,dd=Math.hypot(dx,dz);if(dd>.4){const s=3.2*dt;o.x+=dx/dd*Math.min(s,dd);o.z+=dz/dd*Math.min(s,dd);o.ry=Math.atan2(dx,dz)}o.y=H(o.x,o.z);o.f=0}
+function botAI(q,o,dt,L,k){if(o.d)return;if(o.s){shelterWalk(o,dt);return}
  const bx_=me.x-o.x,bz_=me.z-o.z,bd=Math.hypot(bx_,bz_),db=dep(o.x,o.z,L),sfb=Math.max(0,1-sl(db)*(o.r?.2:1));
  const pb=db>=.95?(Math.abs(o.z)<RIV&&H(o.x,o.z)<0?Math.min(28,3.2*db):db*(1.2+2.2*k)*pfar(o.z)):0;o.x-=pb*(LKS[q]?.4:1)*dt;if(pb>0)col(o);
  o.f=db>=1.2?1:0;o.y=db>=1.2?L-.013*Math.max(0,Math.abs(o.z)-RIV)-1.2:H(o.x,o.z);
@@ -286,15 +291,16 @@ function die(){me.dead=true;me.tie=-1;me.g.visible=false;if(solo)finish(endMsg()
 function say(t,ms){$('msg').textContent=t;if(ms)setTimeout(()=>{if(!end)$('msg').textContent=''},ms)}
 function finish(t){end=true;if(!solo&&ref){ref.child('state').set('end');ST('esc_room',null)}$('msg').innerHTML=t+bst()+'<br><small>(chạm để chơi lại)</small>';$('msg').style.pointerEvents='auto';$('msg').onclick=()=>location.reload()}
 function checkWin(){}
-function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;if(solo&&go&&!end)GT+=dt*TS;
+let PA=false;
+function loop(now){requestAnimationFrame(loop);const dt=PA?0:Math.min(.05,(now-last)/1000);last=now;if(solo&&go&&!end)GT+=dt*TS;
  const tt=(solo?GT:Math.max(0,(srv()-t0)/1000)),L=-1+7.5*Math.min(1,tt/T),Sw=L-.013*Math.max(0,Math.abs(me.z)-RIV),d=Math.max(0,Sw-H(me.x,me.z)),k=Math.min(1,tt/T);
  GU=Math.pow(Math.max(0,Math.sin(tt/9)*Math.sin(tt/23+1)),2);radioTick(tt,now,dt,k,L);
- if(!end&&!me.dead){const inR=Math.abs(me.z)<RIV&&H(me.x,me.z)<0,pr=inR?Math.min(28,3.2*d):0,wl=d>=.95&&nw(me),sf=Math.max(inR&&!me.ring?.1:0,1-sl(d)*(me.ring?.2:1))*(wl&&d<1.75?1.3:1);
+ if(!end&&!me.dead){const inR=Math.abs(me.z)<RIV&&H(me.x,me.z)<0,pr=inR?Math.min(28,3.2*d):0,wl=d>=.95&&nw(me),fr_=clamp((Math.abs(me.z)-RIV)/60,0,1),sf=Math.max(inR&&!me.ring?.1:0,1-sl(d)*(me.ring?.2:1),wl?.5+.3*fr_:0)*(wl&&d<1.75?1.3:1);
   let ix=BIG?0:jx+(keys.d?1:0)-(keys.a?1:0),iy=BIG?0:jy+(keys.w||keys.ArrowUp?1:0)-(keys.s_||keys.ArrowDown?1:0);
   const l=Math.hypot(ix,iy);if(l>1){ix/=l;iy/=l}
   const f=[Math.sin(yaw),Math.cos(yaw)],r=[-f[1],f[0]],dx=f[0]*iy+r[0]*ix,dz=f[1]*iy+r[1]*ix;
-  const push=(inR?pr:d<.95?0:d*(1.2+2.2*k)*pfar(me.z)*(wl?.45:1))*((me.tie>=0||LKS[id])?.4:1);
-  me.x=clamp(me.x+((inR&&!me.ring?Math.min(0,dx):dx)*SPD*sf-push)*dt,-399,399);me.z=clamp(me.z+dz*SPD*sf*dt,-zl(me.x)+2,zl(me.x)-2);if(d>=1.2&&!inR&&Math.abs(me.z)>RIV)me.z-=Math.sign(me.z)*push*.35*dt;col(me);colT(me);for(const q in others){const o=others[q];if(o.d||o.s)continue;const dx_=me.x-o.g.position.x,dz_=me.z-o.g.position.z,dd_=Math.hypot(dx_,dz_);if(dd_<1&&dd_>.001){const pn=(1-dd_)/2;me.x+=dx_/dd_*pn;me.z+=dz_/dd_*pn;if(o.bot){o.x-=dx_/dd_*pn;o.z-=dz_/dd_*pn}}}
+  const push=(inR?pr:d<.95?0:d*(1.2+2.2*k)*pfar(me.z)*(wl?.45-.3*fr_:1))*((me.tie>=0||LKS[id])?.4:1);
+  me.x=clamp(me.x+((inR&&!me.ring?Math.min(0,dx):dx)*SPD*sf-push)*dt,-399,399);me.z=clamp(me.z+dz*SPD*sf*dt,-zl(me.x)+2,zl(me.x)-2);if(d>=1.2&&!inR&&!wl&&Math.abs(me.z)>RIV)me.z-=Math.sign(me.z)*push*.35*dt;col(me);colT(me);for(const q in others){const o=others[q];if(o.d||o.s)continue;const dx_=me.x-o.g.position.x,dz_=me.z-o.g.position.z,dd_=Math.hypot(dx_,dz_);if(dd_<1&&dd_>.001){const pn=(1-dd_)/2;me.x+=dx_/dd_*pn;me.z+=dz_/dd_*pn;if(o.bot){o.x-=dx_/dd_*pn;o.z-=dz_/dd_*pn}}}
   if(me.tie>=0){const t=TR2[me.tie],ex=t.x-me.x,ez=t.z-me.z,dd=Math.hypot(ex,ez)||1;
    if((inR||d>=1.2)&&l>.1&&dx*ex+dz*ez>.3*dd*Math.hypot(dx,dz)){const pw=1.5;me.x+=ex/dd*pw*dt;me.z+=ez/dd*pw*dt}
    if(dd>RL){me.x=t.x-ex/dd*RL;me.z=t.z-ez/dd*RL}}
@@ -306,6 +312,7 @@ function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/
   for(const p of PK){if(p.m.visible&&!me.ring&&Math.hypot(p.x-me.x,p.z-me.z)<3.5){p.m.visible=false;me.ring=true;me.took=true;const i=PK.indexOf(p);
    if(solo){picks[i]=true;np=Object.keys(picks).length}else ref.child('picks/'+i).set(true)}}
   {const ins=Math.hypot(me.x-385,me.z-150)<22;if(ins&&!me.arr){me.arr=true;say('Bạn đã tới nơi an toàn chờ cứu hộ',3000);if(!FLH){FLH=true;FLT=true;$('fb').style.display='block';radio('Bạn được trang bị một chiếc đèn pin. Bấm 🔦 (hoặc phím F) để bật hoặc tắt.')}}me.s=ins}}
+ if(solo&&!end&&!me.dead&&me.s){const bs_=Object.values(others).filter(o=>o.bot);if(bs_.length&&bs_.every(o=>o.s))finish('Bạn đã thành công, mọi người đều an toàn')}
  if(tt>GAME_T&&!end)finish(endMsg());
  me.y+=((d>=1.2?Sw-1.2:H(me.x,me.z))-me.y)*Math.min(1,dt*12);me.g.position.set(me.x,me.y,me.z);me.g.rotation.y=me.ry;Lw=L;setRope(me.rope,me.x,me.y,me.z,me.tie);ringUp(me.g,me.ring,me.fl);BT=me.ring?bestT():null;me.mk.visible=false;{const la=LKS[id],A=la&&LKT[id]==null&&others[la]?others[la].g.position:null;if(A)setLine(me.lrope,A.x,A.y+1.2,A.z,me.g.position.x,me.g.position.y+1.2,me.g.position.z);else me.lrope.visible=false}
  for(const o of PK)o.m.position.y=o.gy+.1*Math.sin(now/400+o.x);
@@ -377,6 +384,8 @@ $('bj').onclick=()=>{const c=$('code').value.trim();if(!c){lob('Nhập mã phòn
 $('bgo').onclick=()=>{if(HOSTID!==id||!pl.length)return;const h=pl[Math.random()*pl.length|0];ref.child('rh').set(h).then(()=>ref.update({state:'play',t0:firebase.database.ServerValue.TIMESTAMP}))};
 $('lv').onclick=()=>{if(!confirm('Rời ván?'))return;if(ref){ref.child('players/'+id).onDisconnect().cancel();if(!go&&HOSTID===id)ref.remove();else if(!go)ref.child('players/'+id).remove();else ref.child('players/'+id).update({left:true,on:false})}ST('esc_room',null);setTimeout(()=>location.reload(),300)};
 $('bs').onclick=()=>{seed=Math.random()*1e9|0;t0=performance.now();solo=true;begin()};
+$('bst').onclick=()=>$('bs').onclick();
+$('bhp').onclick=()=>{const h=$('hlp');h.style.display=h.style.display==='block'?'none':'block'};
 $('fb').onpointerdown=e=>{e.preventDefault();FLT=!FLT;$('fb').style.opacity=FLT?1:.5};
 {const bw=$('bmw');let wp=false;
  $('mm').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();const n=Date.now();if(n-lastTap<350){lastTap=0;BIG=true;bw.style.display='block';drawBig()}else lastTap=n});
@@ -384,6 +393,7 @@ $('fb').onpointerdown=e=>{e.preventDefault();FLT=!FLT;$('fb').style.opacity=FLT?
  bw.addEventListener('pointermove',e=>{if(wp)wipeAt(e)});bw.addEventListener('pointerup',()=>wp=false);bw.addEventListener('pointercancel',()=>wp=false)}
 $('ff').onpointerdown=e=>{e.preventDefault();TS=TS>=8?1:TS*2;$('ff').textContent='⏩ x'+TS};
 $('pm').onpointerdown=e=>{e.preventDefault();GT+=60};
+$('ps').onpointerdown=e=>{e.preventDefault();if(end)return;PA=!PA;$('ps').textContent=PA?'▶':'⏸';say(PA?'⏸ Tạm dừng':'')};
 $('mu').onclick=()=>{if(!AC)return;if(AC.state=='running'){AC.suspend();$('mu').textContent='🔇'}else{AC.resume();$('mu').textContent='🔊'}};
 $('mb').onclick=()=>{mapOn=!mapOn;$('mc').style.display=mapOn?'block':'none';if(mapOn)drawMap()};
 $('rp').onpointerdown=e=>{e.preventDefault();tieT()};
