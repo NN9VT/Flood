@@ -7,6 +7,7 @@ canvas{display:block}
 #hud{position:fixed;top:6px;left:8px;font-size:15px;white-space:nowrap;text-shadow:0 0 3px #000;line-height:1.5;pointer-events:none}
 #menu{position:fixed;inset:0;background:#123d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:16px;z-index:5}
 button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
+#pb{position:fixed;width:54px;height:6px;border-radius:3px;background:rgba(255,255,255,.22);display:none;pointer-events:none;z-index:5;overflow:hidden}#pb i{display:block;height:100%;width:0;background:rgba(255,255,255,.88)}
 #msg{position:fixed;top:38%;width:100%;text-align:center;font-size:26px;text-shadow:0 0 6px #000;pointer-events:none}
 #rd{position:fixed;top:60px;left:50%;transform:translateX(-50%);width:86%;max-width:520px;text-align:center;font-size:14px;line-height:1.35;background:#000b;color:#fff;padding:8px 12px;border-radius:10px;display:none;pointer-events:none;z-index:4}
 #jb{position:fixed;width:100px;height:100px;margin:-50px 0 0 -50px;border-radius:50px;background:#fff3;display:none;pointer-events:none}
@@ -33,7 +34,7 @@ button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
 #rt,#rp,#rl,#th,#fb{position:fixed;top:auto;right:8px;width:44px;padding:6px 0;font-size:20px;text-align:center;background:#0006;color:#fff;z-index:3}
 #rt{bottom:52px;display:none}#rp{bottom:98px;display:none}#rl{bottom:144px}#th{bottom:190px}#fb{bottom:236px}
 </style></head><body>
-<canvas id="rn"></canvas><div id="hud"></div><button id="qx">✖</button><div id="msg"></div><div id="rd"></div>
+<canvas id="rn"></canvas><div id="hud"></div><button id="qx">✖</button><div id="msg"></div><div id="pb"><i></i></div><div id="rd"></div>
 <button id="mu">🔊</button><div id="tb"><button id="ps">⏸</button><button id="pm">+1 phút</button><button id="ff">⏩ x1</button></div><button id="fb">🔦</button><button id="lv" style="position:fixed;left:8px;bottom:8px;display:none;z-index:6;background:#0007;color:#fff;font-size:15px;padding:6px 10px">🚪 Rời</button><button id="mb">🗺</button><button id="mp">📍</button><button id="rp"><svg viewBox="0 0 80 80" width="28" height="28" style="display:block;margin:auto"><rect x="30" y="10" width="20" height="60" rx="2" fill="#8a6a3f"/><path d="M28 30 L52 36 M28 40 L52 46 M28 50 L52 56 M52 56 C62 58 66 64 68 72" stroke="#d98a2b" stroke-width="4" stroke-linecap="round" fill="none"/></svg></button><button id="rt">↩️</button><button id="th">🛟</button><button id="rl"><svg viewBox="0 0 80 80" width="28" height="28" style="display:block;margin:auto"><rect x="7" y="48" width="32" height="16" rx="8" fill="none" stroke="#f1f1f1" stroke-width="3.5" transform="rotate(-40 23 56)"/><rect x="42" y="16" width="32" height="16" rx="8" fill="none" stroke="#f1f1f1" stroke-width="3.5" transform="rotate(-40 58 24)"/><path d="M34 28 L42 38 L36 42 L46 54" stroke="#ff3b30" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button><canvas id="mc" width="320" height="192"></canvas>
 <canvas id="mm" width="120" height="120"></canvas><div id="bmw"><canvas id="bm" width="320" height="192"></canvas><canvas id="mist" width="320" height="192"></canvas><div id="bmh">Bấm đúp ra ngoài bản đồ để thu nhỏ · vuốt ngón tay để lau hơi nước</div></div><div id="jb"><div id="jk"></div></div>
 <div id="menu"><h2>🌊 Thoát lũ</h2><small id="v"></small>
@@ -46,7 +47,7 @@ button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const VER='ver7.2';
+const VER='ver7.6';
 // Dán cấu hình Firebase (Realtime Database) của bạn vào đây:
 const FB={apiKey:"AIzaSyCtWpCTxQDX8QNUPXMv6Z2-0gjNwp0SCS8",authDomain:"xamhuong-82e87.firebaseapp.com",databaseURL:"https://xamhuong-82e87-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"xamhuong-82e87",appId:"1:862412056925:web:44a821b440e0b4f8ade0b4"};
 const $=i=>document.getElementById(i);$('v').textContent=VER;
@@ -186,14 +187,15 @@ function setRope(l,px,py,pz,ti){if(ti<0||!TR2[ti]){l.visible=false;return}const 
 function colT(p){for(const t of TR2){const dx=p.x-t.x,dz=p.z-t.z;if(Math.abs(dx)<2&&Math.abs(dz)<2){const dd=Math.hypot(dx,dz)||.01;if(dd<1.3){p.x=t.x+dx/dd*1.3;p.z=t.z+dz/dd*1.3}}}}
 function retrieve(b){if(solo){const o=others[b];o.r=0;o.t=null;delete LKS[b];delete LKT[b]}else{ref.child('link/'+b).remove();ref.child('lt/'+b).remove();ref.child('take/'+b).set(id)}me.ring=true;0}
 function nearTree(){let b=-1,bd=5;TR2.forEach((t,i)=>{const q=Math.hypot(t.x-me.x,t.z-me.z);if(q<bd){bd=q;b=i}});return b}
-function rescuee(){return Object.keys(LKS).find(b=>LKS[b]===id&&others[b])}
+function rescuee(){const a=Object.keys(LKS).filter(b=>LKS[b]===id&&others[b]);return a.length?a[a.length-1]:undefined}
+function nearRes(){let r,bd=4;for(const b of Object.keys(LKS)){if(LKS[b]!==id||!others[b])continue;const o=others[b],d=Math.hypot(o.g.position.x-me.x,o.g.position.z-me.z);if(d<bd){bd=d;r=b}}return r}
 function canTie(){if(!go||end||me.dead)return false;const lb=rescuee();if(lb)return LKT[lb]==null&&nearTree()>=0;return me.tie<0&&me.ring&&!LKS[id]&&nearTree()>=0}
 function canUntie(){return go&&!end&&!me.dead&&me.tie>=0&&LKT[id]==null}
-function canRet(){if(!go||end||me.dead)return false;const lb=rescuee();if(!lb)return false;const o=others[lb];return Math.hypot(o.g.position.x-me.x,o.g.position.z-me.z)<4}
+function canRet(){return go&&!end&&!me.dead&&!me.ring&&!!nearRes()}
 function tieT(){if(!canTie())return;const b=nearTree(),lb=rescuee();
  if(lb){const o=others[lb];if(solo){LKT[lb]=b;o.t=b}else ref.child('lt/'+lb).set(b);0}else me.tie=b}
 function untieT(){if(canUntie()){me.tie=-1;0}}
-function retT(){if(canRet())retrieve(rescuee())}
+function retT(){if(canRet())retrieve(nearRes())}
 function tieOld(){if(!go||end||me.dead)return;
  const lb=Object.keys(LKS).find(b=>LKS[b]===id&&others[b]);
  if(lb){const o=others[lb],dd=Math.hypot(o.g.position.x-me.x,o.g.position.z-me.z);
@@ -205,11 +207,11 @@ function tieOld(){if(!go||end||me.dead)return;
  if(me.tie>=0){me.tie=-1;0;return}if(!me.ring){0;return}if(LKS[id]){0;return}let b=-1,bd=5;TR2.forEach((t,i)=>{const q=Math.hypot(t.x-me.x,t.z-me.z);if(q<bd){bd=q;b=i}});if(b>=0)me.tie=b;}
 function pfar(z){return 1-.88*clamp((Math.abs(z)-RIV)/110,0,1)}
 function sl(d){return d<=0?0:d<.95?.35*d/.95:d<1.75?.35+.55*(d-.95)/.8:1}
-function bestT(){let b=null,bd=1e9;for(const k in others){const o=others[k];if(o.d||o.s||o.r||o.tr)continue;const dx=o.x-me.x,dz=o.z-me.z,dd=Math.hypot(dx,dz);if(dd>RLEN||dd<.1)continue;let df=Math.atan2(dx,dz)-yaw;df=Math.abs(Math.atan2(Math.sin(df),Math.cos(df)));if(df>1.25)continue;if(dd<bd){bd=dd;b=k}}return b}
+function bestT(){let b=null,bd=1e9;for(const k in others){const o=others[k];if(o.d||o.s||o.r||o.tr||o.trap)continue;const dx=o.x-me.x,dz=o.z-me.z,dd=Math.hypot(dx,dz);if(dd>RLEN||dd<.1)continue;let df=Math.atan2(dx,dz)-yaw;df=Math.abs(Math.atan2(Math.sin(df),Math.cos(df)));if(df>1.25)continue;if(dd<bd){bd=dd;b=k}}return b}
 let FL=null;
 let AIM=false,aimT=0,AIMR=null,AIML=null;
 function aimPt(){const dist=5+(RLEN-5)*clamp((pitch+.6)/1.2,0,1);return[me.x+Math.sin(yaw)*dist,me.z+Math.cos(yaw)*dist]}
-function aimTarget(px,pz){let b=null,bd=4;for(const k in others){const o=others[k];if(o.d||o.s||o.r||o.tr)continue;if(Math.hypot(o.x-me.x,o.z-me.z)>RLEN)continue;const dd=Math.hypot(o.x-px,o.z-pz);if(dd<bd){bd=dd;b=k}}return b}
+function aimTarget(px,pz){let b=null,bd=4;for(const k in others){const o=others[k];if(o.d||o.s||o.r||o.tr||o.trap)continue;if(Math.hypot(o.x-me.x,o.z-me.z)>RLEN)continue;const dd=Math.hypot(o.x-px,o.z-pz);if(dd<bd){bd=dd;b=k}}return b}
 function aimFrame(dt){aimT+=dt;const[px,pz]=aimPt();if(!AIMR){AIMR=new THREE.Mesh(new THREE.RingGeometry(.9,1.25,28),new THREE.MeshBasicMaterial({color:0xffe21a,transparent:true,opacity:.85,side:THREE.DoubleSide,depthTest:false,depthWrite:false}));AIMR.rotation.x=-Math.PI/2;AIMR.renderOrder=10;AIMR.frustumCulled=false;sc.add(AIMR);AIML=rp()}
  const gy=Math.max(H(px,pz),Lw-.013*Math.max(0,Math.abs(pz)-RIV))+.12,k=aimTarget(px,pz);AIMR.visible=true;AIMR.position.set(px,gy,pz);AIMR.scale.setScalar(1+.12*Math.sin(performance.now()/160));AIMR.material.color.setHex(k?0x4cff7a:0xffe21a);
  setLine(AIML,me.x,me.y+1.4,me.z,px,gy,pz);return k}
@@ -238,16 +240,23 @@ function radioTick(tt,now,dt,k,L){while(rdn<RDL.length&&tt>=RDL[rdn][0]){radio(R
  const sp=(2.5+6*k)*dt;for(let i=0;i<140;i++){const f=FOAM[i];if(!f.i){f.wx=me.x+(Math.random()*300-150);f.i=1}f.wx-=sp;let rel=f.wx-me.x;if(rel<-150)f.wx+=300;else if(rel>150)f.wx-=300;FD.position.set(f.wx,L+.06,f.z);FD.scale.set(f.l,1,1);FD.updateMatrix();FM.setMatrixAt(i,FD.matrix)}drawMini();if(BIG){growMist(dt,k);if(now-lm>150){lm=now;drawBig()}}FM.instanceMatrix.needsUpdate=true;FLB.visible=FLT&&FLH;if(FLB.visible){FLB.position.set(me.x,me.y+1.4,me.z);FLB.rotation.y=yaw}if(solo)direct(tt)}
 function clk(t){const m=420+Math.min(120,Math.floor(t/GAME_T*120));return Math.floor(m/60)+':'+String(m%60).padStart(2,'0')}
 function botHud(){const bs=Object.values(others).filter(o=>o.bot);return bs.length?'<br>👤 '+bs.filter(o=>o.s).length+'/'+bs.length:''}
-let nextEv=150,helpQ=null,cryT=0;
+let nextEv=60+Math.random()*60,cryT=0,TRAPN=2+(Math.random()<.5?1:0),trapped=0,TPB=0;
+function findHouse(o){const ci=cix(o.x),cj=ciz(o.z);let b=null,bd=1e9;for(let i=ci-4;i<=ci+4;i++)for(let j=cj-4;j<=cj+4;j++){if(i<0||j<0||i>=NX||j>=N||!HH[i*N+j]||(j>=20&&j<=27))continue;const ax=-HX+(i+.5)*CS,az=-HZ+(j+.5)*CS,dd=Math.hypot(ax-o.x,az-o.z);if(dd<bd){bd=dd;b=[ax,az,HH[i*N+j]]}}return b}
 function direct(tt){
- if(helpQ&&(!others[helpQ]||others[helpQ].d||others[helpQ].s||!others[helpQ].help))helpQ=null;
- if(!helpQ&&tt>=nextEv&&tt<T*.75){
-  const c=Object.keys(others).filter(k=>{const o=others[k],dd=Math.hypot(o.x-me.x,o.z-me.z);return o.bot&&!o.d&&!o.s&&!LKS[k]&&dd>70&&dd<300});
-  if(c.length){const k=c[Math.random()*c.length|0],o=others[k];o.help=true;o.helpT=140;helpQ=k;
-   o.bk=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,60,8,1,true),new THREE.MeshBasicMaterial({color:0xff4444,transparent:true,opacity:.35,fog:false,depthWrite:false}));sc.add(o.bk);o.mk.material.fog=false;o.mk.material.needsUpdate=true;
-   const dx=o.x-me.x,dz=o.z-me.z,dir=Math.abs(dx)>Math.abs(dz)*1.5?(dx>0?'phía đông (thượng nguồn)':'phía tây (hạ nguồn)'):Math.abs(dz)>Math.abs(dx)*1.5?(dz>0?'bờ bắc':'bờ nam'):(dz>0?(dx>0?'đông bắc':'tây bắc'):(dx>0?'đông nam':'tây nam'));
-   radio('Có người kêu cứu ở '+dir+', cách khoảng '+Math.round(Math.hypot(dx,dz)/10)*10+' m!');nextEv=tt+150}
+ if(trapped<TRAPN&&tt>=nextEv&&tt<T*.75){
+  const c=Object.keys(others).filter(k=>{const o=others[k],dd=Math.hypot(o.x-me.x,o.z-me.z);return o.bot&&!o.d&&!o.s&&!o.trap&&!LKS[k]&&(o.fol||0)<5&&dd>70&&dd<300&&dep(o.x,o.z,Lw)<.95&&findHouse(o)});
+  if(c.length){const k=c[Math.random()*c.length|0],o=others[k],h=findHouse(o);o.tr=false;o.trap={ax:h[0],az:h[1],roof:Hg(h[0],h[1])+h[2],pr:0,dur:5+Math.random()*5,dx:0,dz:0};o.trapRun=0;trapped++;nextEv=tt+60+Math.random()*60}
   else nextEv=tt+20}}
+function trapEnter(o){const T_=o.trap;T_.dx=o.x;T_.dz=o.z;o.inH=true;o.help=true;o.x=T_.ax;o.z=T_.az;o.y=T_.roof;o.t=null;
+ o.bk=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,60,8,1,true),new THREE.MeshBasicMaterial({color:0xff4444,transparent:true,opacity:.35,fog:false,depthWrite:false}));sc.add(o.bk);
+ const dx=T_.ax-me.x,dz=T_.az-me.z,dir=Math.abs(dx)>Math.abs(dz)*1.5?(dx>0?'phía đông (thượng nguồn)':'phía tây (hạ nguồn)'):Math.abs(dz)>Math.abs(dx)*1.5?(dz>0?'bờ bắc':'bờ nam'):(dz>0?(dx>0?'đông bắc':'tây bắc'):(dx>0?'đông nam':'tây nam'));
+ radio('Có người kẹt trong nhà ở '+dir+', cách khoảng '+Math.round(Math.hypot(dx,dz)/10)*10+' m!')}
+function trapTick(q,o,dt,L){const T_=o.trap;
+ if(Math.hypot(T_.dx-me.x,T_.dz-me.z)<4&&!me.dead)T_.pr=Math.min(1,T_.pr+dt/T_.dur);else T_.pr=Math.max(0,T_.pr-dt/T_.dur*.5);
+ TPB=Math.max(TPB,T_.pr);
+ if(T_.pr>=1){const high=dep(T_.dx,T_.dz,L)>=.8;o.inH=false;o.help=false;o.trap=null;
+  o.x=me.x+Math.sin(yaw+1.3)*1.8;o.z=me.z+Math.cos(yaw+1.3)*1.8;col(o);o.g.position.x=o.x;o.g.position.z=o.z;o.y=H(o.x,o.z);o.g.position.y=o.y;o.fol=0;o.seen=12;o.st='f';o.bt=8;
+  if(high)o.r=1;else if(!me.ring){me.ring=true;say('Hãy nhận lấy chiếc phao',2500)}}}
 function cry(v,pan){try{const c=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),p=AC.createStereoPanner?AC.createStereoPanner():null;o.type='sawtooth';o.frequency.setValueAtTime(520,c);o.frequency.linearRampToValueAtTime(760,c+.25);o.frequency.linearRampToValueAtTime(480,c+.6);g.gain.setValueAtTime(0,c);g.gain.linearRampToValueAtTime(v,c+.05);g.gain.linearRampToValueAtTime(0,c+.65);o.connect(g);if(p){p.pan.value=pan;g.connect(p);p.connect(AC.destination)}else g.connect(AC.destination);o.start(c);o.stop(c+.7)}catch(e){}}
 let BIG=false,lastTap=0,mistT=0;
 function drawMini(){const c=$('mm').getContext('2d'),R=60,s=R/50,C=Math.cos(yaw),S=Math.sin(yaw);
@@ -289,6 +298,7 @@ function seeLight(o,bd){if(!(FLT&&FLH))return false;const dx=o.x-me.x,dz=o.z-me.
 function shelterWalk(o,dt){if(!o.sp)o.sp=[379+Math.random()*12,146.5+Math.random()*7];
  const dx=o.sp[0]-o.x,dz=o.sp[1]-o.z,dd=Math.hypot(dx,dz);if(dd>.4){const s=3.2*dt;o.x+=dx/dd*Math.min(s,dd);o.z+=dz/dd*Math.min(s,dd);o.ry=Math.atan2(dx,dz)}o.y=H(o.x,o.z);o.f=0}
 function botAI(q,o,dt,L,k){if(o.d)return;if(o.s){shelterWalk(o,dt);return}
+  if(o.trap&&o.inH){trapTick(q,o,dt,L);return}
  if(o.dgIn>0){o.dgIn-=dt;if(o.dgIn<=0)o.dgT=.8}if(o.dgT>0){o.dgT-=dt;o.z=clamp(o.z+o.dgd*7*dt,-RIV-1,RIV+3);o.pa=null;return}
  const bx_=me.x-o.x,bz_=me.z-o.z,bd=Math.hypot(bx_,bz_),db=dep(o.x,o.z,L),sfb=Math.max(0,1-sl(db)*(o.r?.2:1));
  const pb=db>=.95?(Math.abs(o.z)<RIV&&H(o.x,o.z)<0?Math.min(28,3.2*db):db*(1.2+2.2*k)*pfar(o.z)):0;o.x-=pb*(LKS[q]?.4:1)*dt;if(pb>0)col(o);
@@ -297,22 +307,24 @@ function botAI(q,o,dt,L,k){if(o.d)return;if(o.s){shelterWalk(o,dt);return}
  if(o.dw>150){o.d=true;botsDead++;say('😢 Một người dân đã chết đuối!',2500);delete LKS[q];delete LKT[q];return}
  if(Math.hypot(o.x-385,o.z-150)<22&&db<.95){o.s=true;delete LKS[q];delete LKT[q];return}
  if(seeLight(o,bd))o.seen=12;else if(o.seen>0)o.seen-=dt;
- if(o.tr){if(LKS[q]||o.help||db>=.95)o.tr=false;else{o.trT-=dt*(bd<4?3:1);if(o.trT<=0){o.tr=false;o.fol=0}}}
+ if(o.tr){if(o.help||db>=.95)o.tr=false;else{o.trT-=dt*(bd<4?3:1);if(o.trT<=0){o.tr=false;o.fol=0}}}
  if(o.tr)return;
+ if(o.trap&&!o.inH){if(LKS[q])o.trap=null;else{o.trapRun+=dt;if(Math.hypot(o.trap.ax-o.x,o.trap.az-o.z)<=7||o.trapRun>30){trapEnter(o);return}}}
  if(o.help){o.helpT-=dt;if(o.helpT<=0){o.help=false;o.mk.material.fog=true;o.mk.material.needsUpdate=true}
   else if(bd<4){o.help=false;o.mk.material.fog=true;o.mk.material.needsUpdate=true;if(!me.ring){me.ring=true;say('Hãy nhận lấy chiếc phao',2500)}}
   else return}
  let tx=null,tz=0,sp=SPD*.55*sfb,stop=5;
- if(LKS[q]&&LKT[q]!=null){const t=TR2[LKT[q]];o.t=LKT[q];tx=t.x;tz=t.z;sp=3;stop=3}
+ if(o.trap){tx=o.trap.ax;tz=o.trap.az;sp=SPD*.9*sfb;stop=6.5}
+  else if(LKS[q]&&LKT[q]!=null){const t=TR2[LKT[q]];o.t=LKT[q];tx=t.x;tz=t.z;sp=3;stop=3}
  else if(LKS[q]){if(o.runN&&!o.wait){tx=o.rw[0];tz=o.rw[1];sp=SPD*.9*sfb;stop=1.5;if(Math.hypot(tx-o.x,tz-o.z)<2.5)o.wait=true}else if(o.runN&&o.wait){if(bd<9){o.runN=false;o.wait=false}}else if(bd>3&&!(Math.abs(me.z)<RIV&&H(me.x,me.z)<0)){tx=me.x;tz=me.z;sp=db>=1.2?(nw(o)?3:1.2):5;stop=3}}
  else{o.t=null;
   if(o.runN){if(!o.wait){tx=o.rw[0];tz=o.rw[1];sp=SPD*.9*sfb;stop=1.5;if(Math.hypot(tx-o.x,tz-o.z)<2.5)o.wait=true}else if(bd<9){o.runN=false;o.wait=false}}
   else if(o.x>290&&o.z>RIV&&db<.95){tx=385;tz=150;sp=SPD*.9*sfb;stop=0}
   else if(bd<30||o.seen>0){o.bt=(o.bt||0)-dt;if(o.bt<=0){o.st=o.st==='p'?'f':(Math.random()<.3?'p':'f');o.bt=o.st==='p'?3+Math.random()*3:6+Math.random()*8}if(o.st!=='p'){tx=me.x;tz=me.z;sp=SPD*.8*sfb}}
-  else{let lead=null;for(const kk in others){const p=others[kk];if(p!==o&&p.bot&&!p.d&&!p.s&&kk<q&&Math.hypot(p.x-o.x,p.z-o.z)<9)lead=p}
+  else{let lead=null;for(const kk in others){const p=others[kk];if(p!==o&&p.bot&&!p.d&&!p.s&&!p.trap&&kk<q&&Math.hypot(p.x-o.x,p.z-o.z)<9)lead=p}
    if(lead){tx=lead.x;tz=lead.z;stop=4;sp=SPD*.6*sfb}
    else{if(!o.wp||Math.hypot(o.wp[0]-o.x,o.wp[1]-o.z)<5||(o.wt=(o.wt||0)+dt)>14){const sg=o.z<0?-1:1;o.wp=[-370+Math.random()*680,sg*(RIV+5+Math.random()*(zl(0)-RIV-30))];o.wt=0}tx=o.wp[0];tz=o.wp[1]}}}
- if(tx===me.x&&tz===me.z&&!LKS[q])o.fol=(o.fol||0)+dt;else if(!(bd<30||o.seen>0))o.fol=0;
+ if(tx===me.x&&tz===me.z)o.fol=(o.fol||0)+dt;else if(!LKS[q]&&!(bd<30||o.seen>0))o.fol=0;
  sp*=(SK.panic&&onBr(o.x,o.z))?1.5:1;const px0=o.x,pz0=o.z;
  if(tx!=null){const dd=Math.hypot(tx-o.x,tz-o.z);if(dd>stop){let lim=(tx===me.x&&tz===me.z)?1.4:.8;if(LKS[q]&&LKT[q]==null&&tx===me.x&&Math.abs(o.z)>RIV+6)lim=4.5;
   o.pt=(o.pt||0)-dt;if(!o.pa||o.pt<=0||Math.hypot((o.pg?o.pg[0]:0)-tx,(o.pg?o.pg[1]:0)-tz)>8){o.pa=pathTo(o.x,o.z,tx,tz,L,lim);o.pg=[tx,tz];o.pt=1.5;o.pi=0}
@@ -323,18 +335,18 @@ function botAI(q,o,dt,L,k){if(o.d)return;if(o.s){shelterWalk(o,dt);return}
   o.sk=(o.sk||0)+dt;if(o.sk>.8){if(Math.hypot(o.x-(o.sx||0),o.z-(o.sz||0))<.5){o.pa=null;o.nd=1;o.ns=Math.random()<.5?1:-1}o.sk=0;o.sx=o.x;o.sz=o.z}}}
  if(LKS[q]&&LKT[q]==null){const nd=Math.hypot(me.x-o.x,me.z-o.z);if(nd>RLEN&&nd>Math.hypot(me.x-px0,me.z-pz0)){o.x=px0;o.z=pz0}}
  o.x=clamp(o.x,-399,399);o.z=clamp(o.z,-zl(o.x)+2,zl(o.x)-2);
- for(const kk in others){if(kk===q)continue;const p=others[kk];if(p.d||p.s)continue;const sx=o.x-p.x,sz=o.z-p.z,sd=Math.hypot(sx,sz);if(sd<1&&sd>.001){o.x+=sx/sd*(1-sd)/2;o.z+=sz/sd*(1-sd)/2}}}
+ for(const kk in others){if(kk===q)continue;const p=others[kk];if(p.d||p.s||p.inH)continue;const sx=o.x-p.x,sz=o.z-p.z,sd=Math.hypot(sx,sz);if(sd<1&&sd>.001){o.x+=sx/sd*(1-sd)/2;o.z+=sz/sd*(1-sd)/2}}}
 function ringUp(g,has,fl){const rh=g.userData.rh;rh.visible=!!has;if(!has)return;rh.rotation.z+=((fl?0:.8)-rh.rotation.z)*.15;rh.position.y+=((fl?1.35:1.05)-rh.position.y)*.15}
 function lk(d){if(rtn&&d>0)return;pitch=clamp(pitch+d,-.75,1.31)}
 function die(){me.dead=true;me.tie=-1;me.g.visible=false;if(solo)finish(endMsg());else say('💀 Bạn đã chết. Đang xem đồng đội...')}
 function say(t,ms){$('msg').textContent=t;if(ms)setTimeout(()=>{if(!end)$('msg').textContent=''},ms)}
 function finish(t){end=true;if(!solo&&ref){ref.child('state').set('end');ST('esc_room',null)}$('msg').innerHTML=t+bst()+'<br><small>(chạm để chơi lại)</small>';$('msg').style.pointerEvents='auto';$('msg').onclick=()=>location.reload()}
 function checkWin(){}
-let PA=false,tireT=60,tiredN=0;const TMAX=3+(Math.random()*2|0);
-function tireDirector(dt,L){tireT-=dt;if(tireT>0)return;tireT=25+Math.random()*35;if(tiredN>=TMAX)return;
- const al=Object.keys(others).filter(k=>others[k].bot&&!others[k].d&&!others[k].s),nt=al.filter(k=>others[k].tr).length;if(nt+1>=al.length)return;
- const c=al.filter(k=>{const o=others[k];return !o.tr&&!LKS[k]&&!o.help&&(o.fol||0)>=60&&dep(o.x,o.z,L)<.8});if(!c.length)return;
- const o=others[c[Math.random()*c.length|0]];o.tr=true;o.trT=20;tiredN++}
+let PA=false,tireT=60,tiredN=0,TIMM=null;const TMAX=2+(Math.random()*5|0);
+function tireDirector(dt,L){tireT-=dt;if(tireT>0)return;if(tiredN>=TMAX)return;if(TIMM==null){const ks=Object.keys(others).filter(k=>others[k].bot);TIMM=ks.length?ks[Math.random()*ks.length|0]:''}
+ const al=Object.keys(others).filter(k=>others[k].bot&&!others[k].d&&!others[k].s),nt=al.filter(k=>others[k].tr).length;if(nt+1>=al.length){tireT=5;return}
+ const c=al.filter(k=>{const o=others[k];return k!==TIMM&&!o.tr&&!o.trap&&LKT[k]==null&&!o.help&&(o.tc||0)<3&&(o.fol||0)>=60&&dep(o.x,o.z,L)<.8});if(!c.length){tireT=5;return}tireT=Math.max(40,GAME_T/TMAX*(.4+.6*Math.random()));
+ const o=others[c[Math.random()*c.length|0]];o.tr=true;o.trT=20;o.tc=(o.tc||0)+1;tiredN++}
 function tireFx(o,now){if(!o.bot)return;const tr=!!o.tr&&!o.d&&!o.s;o.g.rotation.order='YXZ';
  o.g.rotation.x+=((tr?.3:0)-o.g.rotation.x)*.15;o.g.rotation.z=tr?Math.sin(now/70)*.06:0;
  if(!o.fx){if(!tr)return;const ball=(c,r)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,6,6),new THREE.MeshBasicMaterial({color:c}));m.visible=false;sc.add(m);return m};
@@ -416,12 +428,12 @@ function loop(now){requestAnimationFrame(loop);const dt=PA?0:Math.min(.05,(now-l
   const l=Math.hypot(ix,iy);if(l>1){ix/=l;iy/=l}
   const f=[Math.sin(yaw),Math.cos(yaw)],r=[-f[1],f[0]],dx=f[0]*iy+r[0]*ix,dz=f[1]*iy+r[1]*ix;
   const push=(inR?pr:d<.95?0:d*(1.2+2.2*k)*pfar(me.z)*(wl?.45-.3*fr_:1))*((me.tie>=0||LKS[id])?.4:1);
-  me.x=clamp(me.x+((inR&&!me.ring?Math.min(0,dx):dx)*SPD*sf-push)*dt,-399,399);me.z=clamp(me.z+dz*SPD*sf*dt,-zl(me.x)+2,zl(me.x)-2);if(d>=1.2&&!inR&&!wl&&Math.abs(me.z)>RIV)me.z-=Math.sign(me.z)*push*.35*dt;col(me);colT(me);for(const q in others){const o=others[q];if(o.d||o.s)continue;const dx_=me.x-o.g.position.x,dz_=me.z-o.g.position.z,dd_=Math.hypot(dx_,dz_);if(dd_<1&&dd_>.001){const pn=(1-dd_)/2;me.x+=dx_/dd_*pn;me.z+=dz_/dd_*pn;if(o.bot){o.x-=dx_/dd_*pn;o.z-=dz_/dd_*pn}}}
+  me.x=clamp(me.x+((inR&&!me.ring?Math.min(0,dx):dx)*SPD*sf-push)*dt,-399,399);me.z=clamp(me.z+dz*SPD*sf*dt,-zl(me.x)+2,zl(me.x)-2);if(d>=1.2&&!inR&&!wl&&Math.abs(me.z)>RIV)me.z-=Math.sign(me.z)*push*.35*dt;col(me);colT(me);for(const q in others){const o=others[q];if(o.d||o.s||o.inH)continue;const dx_=me.x-o.g.position.x,dz_=me.z-o.g.position.z,dd_=Math.hypot(dx_,dz_);if(dd_<1&&dd_>.001){const pn=(1-dd_)/2;me.x+=dx_/dd_*pn;me.z+=dz_/dd_*pn;if(o.bot){o.x-=dx_/dd_*pn;o.z-=dz_/dd_*pn}}}
   if(me.tie>=0){const t=TR2[me.tie],ex=t.x-me.x,ez=t.z-me.z,dd=Math.hypot(ex,ez)||1;
    if((inR||d>=1.2)&&l>.1&&dx*ex+dz*ez>.3*dd*Math.hypot(dx,dz)){const pw=1.5;me.x+=ex/dd*pw*dt;me.z+=ez/dd*pw*dt}
    if(dd>RL){me.x=t.x-ex/dd*RL;me.z=t.z-ez/dd*RL}}
   if(LKT[id]!=null&&me.tie!==LKT[id])me.tie=LKT[id];
-  {const bb=Object.keys(LKS).find(b=>LKS[b]===id&&others[b]);if(bb&&LKT[bb]==null){const o=others[bb],ex=o.g.position.x-me.x,ez=o.g.position.z-me.z,dd=Math.hypot(ex,ez);if(dd>RLEN){me.x=o.g.position.x-ex/dd*RLEN;me.z=o.g.position.z-ez/dd*RLEN}}}
+  for(const bb of Object.keys(LKS)){if(LKS[bb]===id&&others[bb]&&LKT[bb]==null){const o=others[bb],ex=o.g.position.x-me.x,ez=o.g.position.z-me.z,dd=Math.hypot(ex,ez);if(dd>RLEN){me.x=o.g.position.x-ex/dd*RLEN;me.z=o.g.position.z-ez/dd*RLEN}}}
   if(LKS[id]&&LKT[id]==null&&others[LKS[id]]){const A=others[LKS[id]],ex=A.g.position.x-me.x,ez=A.g.position.z-me.z,dd=Math.hypot(ex,ez);if(dd>3&&!A.f){const sp=5+((l>.1&&dx*ex+dz*ez>.3*dd*Math.hypot(dx,dz))?1.5:0);me.x+=ex/dd*sp*dt;me.z+=ez/dd*sp*dt;col(me);colT(me)}}
   if(l>.1)me.ry=Math.atan2(dx,dz);
   me.fl=d>=1.2;me.dr=d>=1.2?Math.max(0,me.dr-dt):Math.min(180,me.dr+dt*.5);if(me.dr<=0||me.x<-396)die();
@@ -444,8 +456,9 @@ function loop(now){requestAnimationFrame(loop);const dt=PA?0:Math.min(.05,(now-l
   if(hit){if(solo){others[hit].r=1;LKS[hit]=id}else{ref.child('throw/'+hit).set(id);ref.child('link/'+hit).set(id)}sc.remove(FL.m);FL=null;me.frope.visible=false}}
  if(solo&&!end)tireDirector(dt,L);
  if(solo&&go&&!end)sharkTick(dt,L);
- if(solo)for(const q in others)if(others[q].bot)botAI(q,others[q],dt,L,k);
- for(const q in others){const o=others[q];o.g.position.x+=(o.x-o.g.position.x)*.2;o.g.position.z+=(o.z-o.g.position.z)*.2;o.g.position.y+=(o.y-o.g.position.y)*.2;o.g.rotation.y=o.ry;o.g.visible=!o.d;setRope(o.rope,o.g.position.x,o.g.position.y,o.g.position.z,o.t==null?-1:o.t);ringUp(o.g,o.r,o.f);o.mk.position.set(o.g.position.x,o.g.position.y+2.5,o.g.position.z);o.mk.visible=!o.d;o.mk.rotation.y+=dt*2;o.mk.scale.setScalar(o.help?1.1+.3*Math.sin(now/200):(BT===q?1.12:.7));o.mk.material.color.setHex(o.help?0xff4444:(o.tr?0x7fd4ff:0xffe21a));if(o.bk){if(o.help){o.bk.position.set(o.g.position.x,o.g.position.y+30,o.g.position.z)}else{sc.remove(o.bk);o.bk=null}}{const la=LKS[q],A=la&&LKT[q]==null?(la===id?me.g.position:(others[la]&&others[la].g.position)):null;if(A)setLine(o.lrope,A.x,A.y+1.2,A.z,o.g.position.x,o.g.position.y+1.2,o.g.position.z);else o.lrope.visible=false}}
+ TPB=0;if(solo)for(const q in others)if(others[q].bot)botAI(q,others[q],dt,L,k);
+ {const pb=$('pb');if(TPB>.01&&!end&&!me.dead){const v=new THREE.Vector3(me.x,me.y+2.7,me.z).project(cam);if(v.z<1){pb.style.display='block';pb.style.left=((v.x*.5+.5)*innerWidth-27)+'px';pb.style.top=((-v.y*.5+.5)*innerHeight)+'px';pb.firstChild.style.width=(TPB*100)+'%'}else pb.style.display='none'}else pb.style.display='none'}
+ for(const q in others){const o=others[q];o.g.position.x+=(o.x-o.g.position.x)*.2;o.g.position.z+=(o.z-o.g.position.z)*.2;o.g.position.y+=(o.y-o.g.position.y)*.2;o.g.rotation.y=o.ry;o.g.visible=!o.d&&!o.inH;setRope(o.rope,o.g.position.x,o.g.position.y,o.g.position.z,o.t==null?-1:o.t);ringUp(o.g,o.r,o.f);o.mk.position.set(o.g.position.x,o.g.position.y+2.5,o.g.position.z);o.mk.visible=!o.d&&!o.inH;o.mk.rotation.y+=dt*2;o.mk.scale.setScalar(o.help?1.1+.3*Math.sin(now/200):(BT===q?1.12:.7));o.mk.material.color.setHex(o.help?0xff4444:(o.tr?0x7fd4ff:0xffe21a));if(o.bk){if(o.help){o.bk.position.set(o.g.position.x,o.g.position.y+30,o.g.position.z)}else{sc.remove(o.bk);o.bk=null}}{const la=LKS[q],A=la&&LKT[q]==null?(la===id?me.g.position:(others[la]&&others[la].g.position)):null;if(A)setLine(o.lrope,A.x,A.y+1.2,A.z,o.g.position.x,o.g.position.y+1.2,o.g.position.z);else o.lrope.visible=false}}
  for(const q in others)tireFx(others[q],now);
  {const wp=water.geometry.attributes.position;for(let v=0;v<wp.count;v++)wp.setY(v,L-.013*Math.max(0,Math.abs(wp.getZ(v))-RIV));wp.needsUpdate=true}fog.density=(.018+.051*k)*(1+.5*GU)*(FLT&&FLH?.7:1);fog.color.copy(C1).lerp(C2,k);sc.background.copy(fog.color);
  const c=me.dead?(Object.values(others).find(o=>!o.d)||me):me;if(AIM){rtn=false;lookT=0}else if(rtn){pitch=Math.max(-.4,pitch-dt*1.2);if(pitch<=-.38){rtn=false;lookT=0}}else if(pitch>0){lookT+=dt;if(lookT>=3)rtn=true}else lookT=0;
@@ -457,7 +470,7 @@ function loop(now){requestAnimationFrame(loop);const dt=PA?0:Math.min(.05,(now-l
  for(let i=0;i<n;i++){const x=Math.random()*rc.width,y=Math.random()*rc.height;rx.moveTo(x,y);rx.lineTo(x-5-30*GU,y+16+10*k)}rx.stroke();if(me.dr<180){rx.fillStyle=`rgba(10,50,110,${(1-me.dr/180)*.55})`;rx.fillRect(0,0,rc.width,rc.height)}
  if(AC){GN.rain.gain.value=.04+.4*k;GN.wind.gain.value=.1+.5*k+.35*GU;GN.riv.gain.value=.5*clamp(1-(Math.abs(me.z)-RIV)/50,0,1)}
  if(AC&&GN.sir){let v=0;if(tt>=120){const dx=385-me.x,dz=150-me.z,dd=Math.hypot(dx,dz)||1;v=(()=>{const ph=tt%120;return ph<14?Math.min(1,ph/2)*Math.min(1,(14-ph)/3):0})()*.22*Math.pow(Math.max(0,1-dd/650),1.5);if(GN.pan)GN.pan.pan.value=clamp((-dx*Math.cos(yaw)+dz*Math.sin(yaw))/dd)}GN.sir.gain.value=v}
- if(AC&&helpQ&&others[helpQ]&&others[helpQ].help){const o=others[helpQ],dx=o.x-me.x,dz=o.z-me.z,dd=Math.hypot(dx,dz)||1;if(now-cryT>3500&&dd<260){cryT=now;cry(.18*Math.pow(1-dd/260,1.2),clamp((-dx*Math.cos(yaw)+dz*Math.sin(yaw))/dd))}}
+ if(AC){let o=null,bq=1e9;for(const q in others){const p=others[q];if(p.trap&&p.inH&&!p.d){const d_=Math.hypot(p.x-me.x,p.z-me.z);if(d_<bq){bq=d_;o=p}}}if(o){const dx=o.x-me.x,dz=o.z-me.z,dd=Math.hypot(dx,dz)||1;if(now-cryT>3500&&dd<260){cryT=now;cry(.18*Math.pow(1-dd/260,1.2),clamp((-dx*Math.cos(yaw)+dz*Math.sin(yaw))/dd))}}}
  if(mapOn&&!solo){mapHP-=dt*(1+2*k)/60;if(mapHP<=0){mapHP=0;mapOn=false;$('mc').style.display='none';$('mb').disabled=true;$('mb').textContent='🗺✖';say('🗺 Bản đồ đã ướt rách, không xem được nữa',2500)}}
  if(mapOn&&now-lm>200){lm=now;drawMap()}
  $('rp').style.display=canTie()?'block':'none';$('rt').style.display=canRet()?'block':'none';$('th').style.display=(me.ring&&!me.dead)?'block':'none';$('rl').style.display=(Object.keys(LKS).some(b=>b===id||LKS[b]===id)||canUntie())?'block':'none';$('hud').innerHTML=`🕖 ${clk(tt)} · 💧 ${d.toFixed(1)}m${botHud()}`;
@@ -524,7 +537,7 @@ $('mu').onclick=()=>{if(!AC)return;if(AC.state=='running'){AC.suspend();$('mu').
 $('mb').onclick=()=>{mapOn=!mapOn;$('mc').style.display=mapOn?'block':'none';if(mapOn)drawMap()};
 $('rp').onpointerdown=e=>{e.preventDefault();tieT()};
 $('rt').onpointerdown=e=>{e.preventDefault();retT()};
-$('rl').onpointerdown=e=>{e.preventDefault();if(canUntie()){untieT();return}for(const b of Object.keys(LKS)){if(b===id||LKS[b]===id){if(solo){delete LKS[b];delete LKT[b]}else{ref.child('link/'+b).remove();ref.child('lt/'+b).remove()}0}}};
+$('rl').onpointerdown=e=>{e.preventDefault();if(canUntie()){untieT();return}{const b=rescuee()||(LKS[id]?id:null);if(b){if(solo){delete LKS[b];delete LKT[b]}else{ref.child('link/'+b).remove();ref.child('lt/'+b).remove()}}}};
 $('th').onpointerdown=e=>{e.preventDefault();try{$('th').setPointerCapture(e.pointerId)}catch(_){}aimStart()};
 $('th').onpointerup=e=>{e.preventDefault();aimEnd()};$('th').onpointercancel=()=>{AIM=false;aimHide()};
 $('mp').onclick=()=>{showPos=!showPos;$('mp').style.opacity=showPos?1:.5;if(mapOn)drawMap()};
