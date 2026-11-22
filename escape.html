@@ -47,7 +47,7 @@ button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const VER='ver7.7';
+const VER='ver7.8';
 // Dán cấu hình Firebase (Realtime Database) của bạn vào đây:
 const FB={apiKey:"AIzaSyCtWpCTxQDX8QNUPXMv6Z2-0gjNwp0SCS8",authDomain:"xamhuong-82e87.firebaseapp.com",databaseURL:"https://xamhuong-82e87-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"xamhuong-82e87",appId:"1:862412056925:web:44a821b440e0b4f8ade0b4"};
 const $=i=>document.getElementById(i);$('v').textContent=VER;
@@ -237,7 +237,7 @@ function radio(t){const e=$('rd');e.textContent='📢 '+t;e.style.display='block
 function radioTick(tt,now,dt,k,L){while(rdn<RDL.length&&tt>=RDL[rdn][0]){radio(RDL[rdn][1]);rdn++}
  if(!sirOn&&tt>=120){sirOn=true;say('🔊 Có tiếng còi cứu hộ vọng lại từ phía xa...',3500)}
  if(tt>=240){if(!lgtOn){lgtOn=true;BEAM.visible=true;say('🔦 Đèn pha cứu hộ đã bật trên đồi phía thượng nguồn!',3500)}{const bo=Math.min(1,(tt-240)/30)*.35*(.8+.2*Math.sin(now/300));BMS.forEach(b=>b.m.opacity=bo*b.f)};BEAM.rotation.y=now/1400}
- const sp=(2.5+6*k)*dt;for(let i=0;i<140;i++){const f=FOAM[i];if(!f.i){f.wx=me.x+(Math.random()*300-150);f.i=1}f.wx-=sp;let rel=f.wx-me.x;if(rel<-150)f.wx+=300;else if(rel>150)f.wx-=300;FD.position.set(f.wx,L+.06,f.z);FD.scale.set(f.l,1,1);FD.updateMatrix();FM.setMatrixAt(i,FD.matrix)}drawMini();if(BIG){growMist(dt,k);if(now-lm>150){lm=now;drawBig()}}FM.instanceMatrix.needsUpdate=true;FLB.visible=FLT&&FLH;if(FLB.visible){FLB.position.set(me.x,me.y+1.4,me.z);FLB.rotation.y=yaw}if(solo)direct(tt)}
+ const sp=(2.5+6*k)*dt;for(let i=0;i<140;i++){const f=FOAM[i];if(!f.i){f.wx=me.x+(Math.random()*300-150);f.i=1}f.wx-=sp;let rel=f.wx-me.x;if(rel<-150)f.wx+=300;else if(rel>150)f.wx-=300;FD.position.set(f.wx,L+.06,f.z);FD.scale.set(f.l,1,1);FD.updateMatrix();FM.setMatrixAt(i,FD.matrix)}drawMini();if(BIG){growMist(dt,k);if(now-lm>150){lm=now;drawBig()}}FM.instanceMatrix.needsUpdate=true;FLB.visible=FLT&&FLH;if(FLB.visible){FLB.position.set(me.x,me.y+1.4,me.z);FLB.rotation.y=fyaw()}if(solo)direct(tt)}
 function clk(t){const m=420+Math.min(120,Math.floor(t/GAME_T*120));return Math.floor(m/60)+':'+String(m%60).padStart(2,'0')}
 function botHud(){const bs=Object.values(others).filter(o=>o.bot);return bs.length?'<br>👤 '+bs.filter(o=>o.s).length:''}
 let NB=5+(Math.random()*3|0),nextEv=60+Math.random()*60,cryT=0,TRAPN=2+(Math.random()<.5?1:0),trapped=0,TPB=0;
@@ -293,7 +293,8 @@ function pathTo(sx,sz,tx,tz,L,lim){const si=cix(sx),sj=ciz(sz),ti=cix(tx),tj=ciz
  while(h<q.length){const c=q[h++],i=c/N|0,j=c%N,d=Math.abs(i-ti)+Math.abs(j-tj);if(d<bd){bd=d;best=c}if(d<=1)break;
   for(const[a,b]of[[1,0],[-1,0],[0,1],[0,-1]]){const x=i+a,y=j+b,k=x*N+y;if(x>=0&&y>=0&&x<NX&&y<N&&pv[k]===-2&&ok(x,y)){pv[k]=c;q.push(k)}}}
  const P=[];let c=best;while(c>=0&&pv[c]!==-1){P.push([-HX+((c/N|0)+.5)*CS,-HZ+((c%N)+.5)*CS]);c=pv[c]}P.reverse();return P}
-function seeLight(o,bd){if(!(FLT&&FLH))return false;const dx=o.x-me.x,dz=o.z-me.z;let t=Math.atan2(dx,dz)-yaw;t=Math.abs(Math.atan2(Math.sin(t),Math.cos(t)));if(bd>=40+40*Math.pow(Math.cos(t/2),4))return false;
+function fyaw(){let d=yaw-me.ry;d=Math.atan2(Math.sin(d),Math.cos(d));return me.ry+clamp(d,-1.047,1.047)}
+function seeLight(o,bd){if(!(FLT&&FLH))return false;const dx=o.x-me.x,dz=o.z-me.z;let t=Math.atan2(dx,dz)-fyaw();t=Math.abs(Math.atan2(Math.sin(t),Math.cos(t)));if(bd>=40+40*Math.pow(Math.cos(t/2),4))return false;
  for(let q=4;q<bd;q+=4){if(hh(me.x+dx*q/bd,me.z+dz*q/bd)>0)return false}return true}
 function shelterWalk(o,dt){if(!o.sp)o.sp=[379+Math.random()*12,146.5+Math.random()*7];
  const dx=o.sp[0]-o.x,dz=o.sp[1]-o.z,dd=Math.hypot(dx,dz);if(dd>.4){const s=3.2*dt;o.x+=dx/dd*Math.min(s,dd);o.z+=dz/dd*Math.min(s,dd);o.ry=Math.atan2(dx,dz)}o.y=H(o.x,o.z);o.f=0}
