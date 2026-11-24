@@ -43,12 +43,12 @@ button,input{font-size:18px;padding:10px 16px;border-radius:8px;border:0}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const VER='ver8.3';
+const VER='ver8.4';
 const $=i=>document.getElementById(i);$('v').textContent=VER;
 const RLEN=32.5,RIV=37.5,RL=22,SPD=5.9,T=1378,GAME_T=1080,N=48,NX=80,CS=10,HX=400,HZ=240,clamp=(v,a=-1,b=1)=>Math.max(a,Math.min(b,v)),cix=v=>Math.floor((v+HX)/CS),ciz=v=>Math.floor((v+HZ)/CS);
 function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-let sc,cam,ren,water,fog,go=false,end=false,seed,bx=0,bc=20,HH=new Float32Array(NX*N),RD=new Uint8Array(NX*N),BM=[],bh=2,PK=[],others={},AC,GN={},mapOn=false,lm=0,mapHP=1,showPos=true,SX=-315,SZ=-155,pitch=-.4,lookT=0,rtn=false,TR2=[],Lw=-1,SG=[],BT=null,LKS={},LKT={},botsDead=0,GT=0,ON=false,ISHOST=false,HOSTID=null,SELF=null,ROSTER=[],COLS=[],STARTED=false,RM=null,ACT={},TY=null,ROOMCODE='',sent=0,TS=1,GU=0,FLT=false,FLH=false,FLB=null;
-const id='player',me={x:-315,z:-155,y:0,ry:Math.PI/2,s:false,dr:180,tie:-1,ring:false};
+let sc,cam,ren,water,fog,go=false,end=false,seed,bx=0,bc=20,HH=new Float32Array(NX*N),RD=new Uint8Array(NX*N),BM=[],bh=2,PK=[],others={},AC,GN={},mapOn=false,lm=0,mapHP=1,showPos=true,SX=-315,SZ=-155,pitch=-.4,lookT=0,rtn=false,TR2=[],Lw=-1,SG=[],BT=null,LKS={},LKT={},botsDead=0,GT=0,ON=false,ISHOST=false,HOSTID=null,SELF=null,ROSTER=[],COLS=[],STARTED=false,RM=null,ACT={},TY=null,ROOMCODE='',sent=0,sentS=0,PEND={},TP={},ENDW=null,TS=1,GU=0,FLT=false,FLH=false,FLB=null;
+let id='player';const me={x:-315,z:-155,y:0,ry:Math.PI/2,s:false,dr:180,tie:-1,ring:false};
 let yaw=Math.PI/2,jx=0,jy=0,keys={},last=0;
 const C1=new THREE.Color(0x8fa3b0),C2=new THREE.Color(0x3a444c),rc=$('rn'),rx=rc.getContext('2d');
 const PAL=[0xa8574a,0xc2b280,0x7d8f9a,0x6f8a6a,0xd9cfc1],TR=Array.from({length:12},()=>[Math.random()*190,Math.random()*70,40+Math.random()*90,3+Math.random()*7]);
@@ -163,7 +163,7 @@ function drawMap(){const c=$('mc').getContext('2d'),s=4,W=NX*s,Hh=N*s,py=z=>Hh-(
  const nt=Math.floor((1-mapHP)*12);c.fillStyle='#1c1c1c';for(let i=0;i<nt;i++){const t=TR[i];c.fillRect(t[0],t[1],t[2],t[3])}
  c.fillStyle='rgba(120,160,200,.3)';for(let i=0;i<nt;i++){const t=TR[i];c.beginPath();c.arc(t[0]+t[2]/2,t[1],t[3]*3,0,7);c.fill()}
  $('mc').style.filter=`blur(${(1-mapHP)*3}px)`;$('mc').style.opacity=.4+.6*mapHP}
-function begin(){if(go)return;build();initShark();$('qx').style.display='block';$('lv').style.display='none';if(ON){me.ring=false;me.took=false;mkHumans();if(!ISHOST)$('mm').style.display='none'}else{me.ring=true;me.took=true;spawnBots()}audio();$('mb').style.display='none';$('mp').style.display='none';$('tb').style.display=ON?'none':'flex';GT=0;go=true;$('menu').style.display='none';requestAnimationFrame(loop)}
+function begin(){if(go)return;build();initShark();$('qx').style.display='block';$('lv').style.display='none';if(ON){me.ring=false;me.took=false;mkHumans();spawnBots();if(!ISHOST)$('mm').style.display='none'}else{me.ring=true;me.took=true;spawnBots()}audio();$('mb').style.display='none';$('mp').style.display='none';$('tb').style.display=ON?'none':'flex';GT=0;go=true;$('menu').style.display='none';requestAnimationFrame(loop)}
 function col(p){const i0=cix(p.x),j0=ciz(p.z);for(let i=i0-1;i<=i0+1;i++)for(let j=j0-1;j<=j0+1;j++){if(i<0||j<0||i>=NX||j>=N||!HH[i*N+j])continue;
  const ax=-HX+(i+.5)*CS,az=-HZ+(j+.5)*CS,dx=p.x-ax,dz=p.z-az,e=5.5;
  if(Math.abs(dx)<e&&Math.abs(dz)<e){if(e-Math.abs(dx)<e-Math.abs(dz))p.x=ax+(dx<0?-e:e);else p.z=az+(dz<0?-e:e)}}}
@@ -178,7 +178,7 @@ function setRope(l,px,py,pz,ti){if(ti<0||!TR2[ti]){l.visible=false;return}const 
  for(let i=0;i<16;i++){V1.set(...P[i]);V2.set(...P[i+1]);RO.position.copy(V1).add(V2).multiplyScalar(.5);RO.lookAt(V2);RO.scale.set(.12,.12,V1.distanceTo(V2)+.02);RO.updateMatrix();l.setMatrixAt(i,RO.matrix)}
  l.instanceMatrix.needsUpdate=true;l.visible=true}
 function colT(p){for(const t of TR2){const dx=p.x-t.x,dz=p.z-t.z;if(Math.abs(dx)<2&&Math.abs(dz)<2){const dd=Math.hypot(dx,dz)||.01;if(dd<1.3){p.x=t.x+dx/dd*1.3;p.z=t.z+dz/dd*1.3}}}}
-function retrieve(b){const o=others[b];o.r=0;o.t=null;delete LKS[b];delete LKT[b];me.ring=true}
+function retrieve(b){const o=others[b];o.r=0;o.t=null;delete LKS[b];delete LKT[b];if(ON&&!ISHOST){ACT.ac.send({a:'ret',b});pend(b)}me.ring=true}
 function nearTree(){let b=-1,bd=5;TR2.forEach((t,i)=>{const q=Math.hypot(t.x-me.x,t.z-me.z);if(q<bd){bd=q;b=i}});return b}
 function rescuee(){const a=Object.keys(LKS).filter(b=>LKS[b]===id&&others[b]);return a.length?a[a.length-1]:undefined}
 function nearRes(){let r,bd=4;for(const b of Object.keys(LKS)){if(LKS[b]!==id||!others[b])continue;const o=others[b],d=Math.hypot(o.g.position.x-me.x,o.g.position.z-me.z);if(d<bd){bd=d;r=b}}return r}
@@ -186,7 +186,7 @@ function canTie(){if(!go||end||me.dead)return false;const lb=rescuee();if(lb)ret
 function canUntie(){return go&&!end&&!me.dead&&me.tie>=0&&LKT[id]==null}
 function canRet(){return go&&!end&&!me.dead&&!me.ring&&!!nearRes()}
 function tieT(){if(!canTie())return;const b=nearTree(),lb=rescuee();
- if(lb){const o=others[lb];LKT[lb]=b;o.t=b}else me.tie=b}
+ if(lb){const o=others[lb];LKT[lb]=b;o.t=b;if(ON&&!ISHOST){ACT.ac.send({a:'tie',b:lb,t:b});pend(lb)}}else me.tie=b}
 function untieT(){if(canUntie()){me.tie=-1;0}}
 function retT(){if(canRet())retrieve(nearRes())}
 function tieOld(){if(!go||end||me.dead)return;
@@ -217,7 +217,7 @@ function throwPt(px,pz){const d0=Math.hypot(px-me.x,pz-me.z),T_=Math.max(.4,d0/2
 function aimEnd(){if(!AIM)return;const t=aimT;AIM=false;aimHide();if(!go||end||me.dead||!me.ring||FL||me.tie>=0)return;
  if(t<.25){const k=bestT();if(!k){say('Không có mục tiêu',1500);return}throwAt(k);return}
  const[px,pz]=aimPt(),k=aimTarget(px,pz);if(k)throwAt(k);else throwPt(px,pz)}
-function endMsg(){if(ON)return ROSTER.map((p,i)=>{const sf=p===SELF,o=sf?me:others[p],n=sf?'Bạn':'Người chơi '+(i+1);return n+(o&&o.s?' đã tới nơi an toàn':(o&&o.left)?' đã rời ván':(sf?me.dead:(o&&o.d))?' đã không thể vượt qua cơn lũ':' chưa kịp tới nơi an toàn')}).join('<br>');return me.s?'Bạn đã tới nơi an toàn':'Thật không may, bạn đã không thể vượt qua cơn lũ!'}
+function endMsg(){if(ON)return (ENDW==='lost'?'😢 Tất cả người dân đã chết, thất bại!<br>':'')+ROSTER.map((p,i)=>{const sf=p===SELF,o=sf?me:others[p],n=sf?'Bạn':'Người chơi '+(i+1);return n+(o&&o.s?' đã tới nơi an toàn':(o&&o.left)?' đã rời ván':(sf?me.dead:(o&&o.d))?' đã không thể vượt qua cơn lũ':' chưa kịp tới nơi an toàn')}).join('<br>');return me.s?'Bạn đã tới nơi an toàn':'Thật không may, bạn đã không thể vượt qua cơn lũ!'}
 let FM=null,FOAM=[],BEAM=null,BM_=null,BMS=[],rdn=0,sirOn=false,lgtOn=false;const FD=new THREE.Object3D();
 const RDL=[[3,'Khu vực cứu hộ ở đồi cao phía thượng nguồn, bên kia cầu. Hãy đi ngược dòng nước!'],[245,'Đèn pha cứu hộ đã bật trên đồi. Hãy hướng về phía ánh sáng!'],[400,'Nhắc lại: điểm cứu hộ ở đồi cao phía thượng nguồn, bên kia cầu.'],[650,'Cứu hộ vẫn đang chờ ở đồi phía thượng nguồn. Đừng bỏ cuộc!'],[900,'Nước đang dâng nhanh. Hãy tìm đường tới đồi cứu hộ phía thượng nguồn.']];
 function radio(t){const e=$('rd');e.textContent='📢 '+t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',9000);
@@ -225,14 +225,14 @@ function radio(t){const e=$('rd');e.textContent='📢 '+t;e.style.display='block
 function radioTick(tt,now,dt,k,L){while(rdn<RDL.length&&tt>=RDL[rdn][0]){radio(RDL[rdn][1]);rdn++}
  if(!sirOn&&tt>=120){sirOn=true;say('🔊 Có tiếng còi cứu hộ vọng lại từ phía xa...',3500)}
  if(tt>=240){if(!lgtOn){lgtOn=true;BEAM.visible=true;say('🔦 Đèn pha cứu hộ đã bật trên đồi phía thượng nguồn!',3500)}{const bo=Math.min(1,(tt-240)/30)*.35*(.8+.2*Math.sin(now/300));BMS.forEach(b=>b.m.opacity=bo*b.f)};BEAM.rotation.y=now/1400}
- const sp=(2.5+6*k)*dt;for(let i=0;i<140;i++){const f=FOAM[i];if(!f.i){f.wx=me.x+(Math.random()*300-150);f.i=1}f.wx-=sp;let rel=f.wx-me.x;if(rel<-150)f.wx+=300;else if(rel>150)f.wx-=300;FD.position.set(f.wx,L+.06,f.z);FD.scale.set(f.l,1,1);FD.updateMatrix();FM.setMatrixAt(i,FD.matrix)}drawMini();if(BIG){growMist(dt,k);if(now-lm>150){lm=now;drawBig()}}FM.instanceMatrix.needsUpdate=true;FLB.visible=FLT&&FLH;if(FLB.visible){FLB.position.set(me.x,me.y+1.4,me.z);FLB.rotation.y=fyaw()}if(!ON)direct(tt)}
+ const sp=(2.5+6*k)*dt;for(let i=0;i<140;i++){const f=FOAM[i];if(!f.i){f.wx=me.x+(Math.random()*300-150);f.i=1}f.wx-=sp;let rel=f.wx-me.x;if(rel<-150)f.wx+=300;else if(rel>150)f.wx-=300;FD.position.set(f.wx,L+.06,f.z);FD.scale.set(f.l,1,1);FD.updateMatrix();FM.setMatrixAt(i,FD.matrix)}drawMini();if(BIG){growMist(dt,k);if(now-lm>150){lm=now;drawBig()}}FM.instanceMatrix.needsUpdate=true;FLB.visible=FLT&&FLH;if(FLB.visible){FLB.position.set(me.x,me.y+1.4,me.z);FLB.rotation.y=fyaw()}if(!ON||ISHOST)direct(tt)}
 function clk(t){const m=420+Math.min(120,Math.floor(t/GAME_T*120));return Math.floor(m/60)+':'+String(m%60).padStart(2,'0')}
 function botHud(){const bs=Object.values(others).filter(o=>o.bot);return bs.length?'<br>👤 '+bs.filter(o=>o.s).length:''}
 let GIFTMAX=1+(Math.random()*2|0),giftN=0,KS={k:null,st:'idle',t:0,sp:0,bud:0,did:false,ph:'go',pt:0},HS=[],HG=null,NB=5+(Math.random()*3|0),nextEv=60+Math.random()*60,cryT=0,TRAPN=2+(Math.random()<.5?1:0),trapped=0,TPB=0;
 function findHouse(o){const ci=cix(o.x),cj=ciz(o.z);let b=null,bd=1e9;for(let i=ci-4;i<=ci+4;i++)for(let j=cj-4;j<=cj+4;j++){if(i<0||j<0||i>=NX||j>=N||!HH[i*N+j]||(j>=20&&j<=27))continue;const ax=-HX+(i+.5)*CS,az=-HZ+(j+.5)*CS,dd=Math.hypot(ax-o.x,az-o.z);if(dd<bd){bd=dd;b=[ax,az,HH[i*N+j]]}}return b}
 function direct(tt){
  if(trapped<TRAPN&&tt>=nextEv&&tt<T*.75){
-  const c=Object.keys(others).filter(k=>{const o=others[k],dd=Math.hypot(o.x-me.x,o.z-me.z);return o.bot&&!o.d&&!o.s&&!o.trap&&!LKS[k]&&(o.fol||0)<5&&dd>70&&dd<300&&dep(o.x,o.z,Lw)<.95&&findHouse(o)});
+  const c=Object.keys(others).filter(k=>{const o=others[k],dd=ON?minHDist(o):Math.hypot(o.x-me.x,o.z-me.z);return o.bot&&!o.d&&!o.s&&!o.trap&&!LKS[k]&&(o.fol||0)<5&&dd>70&&dd<300&&dep(o.x,o.z,Lw)<.95&&findHouse(o)});
   if(c.length){const k=c[Math.random()*c.length|0],o=others[k],h=findHouse(o);o.tr=false;o.trap={ax:h[0],az:h[1],roof:Hg(h[0],h[1])+h[2],pr:0,dur:5+Math.random()*5,dx:0,dz:0};o.trapRun=0;trapped++;nextEv=tt+60+Math.random()*60}
   else nextEv=tt+20}}
 function kissOK(q,o,dt,L){if(KS.did||KS.st!=='idle'||PA||end||me.dead)return false;
@@ -257,16 +257,17 @@ function kissFrame(r){
    m.position.set((me.x+o.g.position.x)/2+(Math.random()-.5)*.9,me.y+2.3,(me.z+o.g.position.z)/2+(Math.random()-.5)*.9);sc.add(m);HS.push({m,t:0,vx:(Math.random()-.5)*.5,vy:.9+Math.random()*.4,vz:(Math.random()-.5)*.5})}
   if(KS.t>=1.8)KS.st='done'}
  for(let i=HS.length-1;i>=0;i--){const h=HS[i];h.t+=r;h.m.position.x+=h.vx*r;h.m.position.y+=h.vy*r;h.m.position.z+=h.vz*r;h.m.lookAt(cam.position);h.m.material.opacity=Math.max(0,1-h.t/1.6);if(h.t>=1.6){sc.remove(h.m);HS.splice(i,1)}}}
-function trapEnter(o){const T_=o.trap;T_.dx=o.x;T_.dz=o.z;o.inH=true;o.help=true;o.x=T_.ax;o.z=T_.az;o.y=T_.roof;o.t=null;
- o.bk=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,60,8,1,true),new THREE.MeshBasicMaterial({color:0xff4444,transparent:true,opacity:.35,fog:false,depthWrite:false}));sc.add(o.bk);
- const dx=T_.ax-me.x,dz=T_.az-me.z,dir=Math.abs(dx)>Math.abs(dz)*1.5?(dx>0?'phía đông (thượng nguồn)':'phía tây (hạ nguồn)'):Math.abs(dz)>Math.abs(dx)*1.5?(dz>0?'bờ bắc':'bờ nam'):(dz>0?(dx>0?'đông bắc':'tây bắc'):(dx>0?'đông nam':'tây nam'));
+function mkBk(){const b=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,60,8,1,true),new THREE.MeshBasicMaterial({color:0xff4444,transparent:true,opacity:.35,fog:false,depthWrite:false}));sc.add(b);return b}
+function trapRadio(ax,az){const dx=ax-me.x,dz=az-me.z,dir=Math.abs(dx)>Math.abs(dz)*1.5?(dx>0?'phía đông (thượng nguồn)':'phía tây (hạ nguồn)'):Math.abs(dz)>Math.abs(dx)*1.5?(dz>0?'bờ bắc':'bờ nam'):(dz>0?(dx>0?'đông bắc':'tây bắc'):(dx>0?'đông nam':'tây nam'));
  radio('Có người kẹt trong nhà ở '+dir+', cách khoảng '+Math.round(Math.hypot(dx,dz)/10)*10+' m!')}
+function trapEnter(o){const T_=o.trap;T_.dx=o.x;T_.dz=o.z;o.inH=true;o.help=true;o.x=T_.ax;o.z=T_.az;o.y=T_.roof;o.t=null;o.bk=mkBk();trapRadio(T_.ax,T_.az);evSend({e:'rad',ax:T_.ax,az:T_.az})}
 function trapTick(q,o,dt,L){const T_=o.trap;
- if(Math.hypot(T_.dx-me.x,T_.dz-me.z)<4&&!me.dead)T_.pr=Math.min(1,T_.pr+dt/T_.dur);else T_.pr=Math.max(0,T_.pr-dt/T_.dur*.5);
- if(Math.hypot(T_.dx-me.x,T_.dz-me.z)<4&&!me.dead)TPB=Math.max(TPB,T_.pr);
- if(T_.pr>=1){const high=dep(T_.dx,T_.dz,L)>=.8;o.inH=false;o.help=false;o.trap=null;
-  o.x=me.x+Math.sin(yaw+1.3)*1.8;o.z=me.z+Math.cos(yaw+1.3)*1.8;col(o);o.g.position.x=o.x;o.g.position.z=o.z;o.y=H(o.x,o.z);o.g.position.y=o.y;o.fol=0;o.seen=12;o.st='f';o.bt=8;
-  if(high)o.r=1;else if(!me.ring&&giftN<GIFTMAX){giftN++;me.ring=true;say('Hãy nhận lấy chiếc phao',2500)}}}
+ const hs=(ON?hlist().filter(h=>!h.dead&&Math.hypot(T_.dx-h.x,T_.dz-h.z)<4):(Math.hypot(T_.dx-me.x,T_.dz-me.z)<4&&!me.dead?[me]:[])).sort((u,v)=>Math.hypot(T_.dx-u.x,T_.dz-u.z)-Math.hypot(T_.dx-v.x,T_.dz-v.z));
+ if(hs.length)T_.pr=Math.min(1,T_.pr+dt/T_.dur);else T_.pr=Math.max(0,T_.pr-dt/T_.dur*.5);
+ if(hs.some(h=>h===me||h.isMe))TPB=Math.max(TPB,T_.pr);
+ if(T_.pr>=1){const R=hs[0]||me,high=dep(T_.dx,T_.dz,L)>=.8,ya=(ON?R.ry:yaw)+1.3;o.inH=false;o.help=false;o.trap=null;
+  o.x=R.x+Math.sin(ya)*1.8;o.z=R.z+Math.cos(ya)*1.8;col(o);o.g.position.x=o.x;o.g.position.z=o.z;o.y=H(o.x,o.z);o.g.position.y=o.y;o.fol=0;o.seen=12;o.st='f';o.bt=8;
+  if(high)o.r=1;else if(!R.ring&&giftN<GIFTMAX){giftN++;giveRing(R)}}}
 function cry(v,pan){try{const c=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),p=AC.createStereoPanner?AC.createStereoPanner():null;o.type='sawtooth';o.frequency.setValueAtTime(520,c);o.frequency.linearRampToValueAtTime(760,c+.25);o.frequency.linearRampToValueAtTime(480,c+.6);g.gain.setValueAtTime(0,c);g.gain.linearRampToValueAtTime(v,c+.05);g.gain.linearRampToValueAtTime(0,c+.65);o.connect(g);if(p){p.pan.value=pan;g.connect(p);p.connect(AC.destination)}else g.connect(AC.destination);o.start(c);o.stop(c+.7)}catch(e){}}
 let BIG=false,lastTap=0,mistT=0;
 function drawMini(){const c=$('mm').getContext('2d'),R=60,s=R/50,C=Math.cos(yaw),S=Math.sin(yaw);
@@ -294,8 +295,8 @@ function growMist(dt,k){mistT+=dt;if(mistT<.5)return;const m=$('mist').getContex
 function wipeAt(e){if(PA)return;const mc=$('mist'),r=mc.getBoundingClientRect(),m=mc.getContext('2d');m.globalCompositeOperation='destination-out';m.beginPath();m.arc((e.clientX-r.left)*mc.width/r.width,(e.clientY-r.top)*mc.height/r.height,16,0,7);m.fill();m.globalCompositeOperation='source-over'}
 function bst(){const bs=Object.values(others).filter(o=>o.bot);if(!bs.length)return '';return '<br>👤 Đã cứu '+bs.filter(o=>o.s).length+'/'+bs.length+' người dân'+(bs.length>bs.filter(o=>o.s).length?' · 😢 '+(bs.length-bs.filter(o=>o.s).length)+' người dân đã chết':'')}
 function spawnBots(){const cells=[];for(let i=7;i<74;i++)for(let j=2;j<46;j++)if(RD[i*N+j]&&(j<20||j>27))cells.push([i,j]);
- for(let n=0;n<NB;n++){let x,z;if(n===0){x=me.x+4;z=me.z}else{const c=cells[Math.random()*cells.length|0];x=-HX+(c[0]+.5)*CS;z=-HZ+(c[1]+.5)*CS}
-  others['bot'+n]={bot:true,g:mk(colr('bot'+n)),rope:rp(),lrope:rp(),mk:mkMk(),x,z,y:0,ry:0}}}
+ for(let n=0;n<NB;n++){let x,z;if(!ON&&n===0){x=me.x+4;z=me.z}else{let c,t=0;do{c=cells[Math.random()*cells.length|0];x=-HX+(c[0]+.5)*CS;z=-HZ+(c[1]+.5)*CS}while(ON&&Math.hypot(x+315,z+155)<60&&++t<60)}
+  others['bot'+n]={bot:true,inH:ON&&!ISHOST,g:mk(colr('bot'+n)),rope:rp(),lrope:rp(),mk:mkMk(),x,z,y:0,ry:0}}}
 function dep(x,z,L){return Math.max(0,L-.013*Math.max(0,Math.abs(z)-RIV)-H(x,z))}
 function pathTo(sx,sz,tx,tz,L,lim){const si=cix(sx),sj=ciz(sz),ti=cix(tx),tj=ciz(tz);if(si<0||sj<0||si>=NX||sj>=N)return null;
  const ok=(i,j)=>{if(i<0||j<0||i>=NX||j>=N||HH[i*N+j])return false;if(j>=20&&j<=27&&i!=bc)return false;const cx=-HX+(i+.5)*CS,cz=-HZ+(j+.5)*CS;if(Math.abs(cz)>zl(cx)-8)return false;return dep(cx,cz,L)<lim};
@@ -308,45 +309,45 @@ function seeLight(o,bd){if(!(FLT&&FLH))return false;const dx=o.x-me.x,dz=o.z-me.
  for(let q=4;q<bd;q+=4){if(hh(me.x+dx*q/bd,me.z+dz*q/bd)>0)return false}return true}
 function shelterWalk(o,dt){if(!o.sp){o.sp=[379+Math.random()*12,146.5+Math.random()*7];o.lk=Math.random()<.5;o.lo=Math.atan2(o.sp[0]-385,o.sp[1]-150)+(Math.random()-.5)*.8}
  const dx=o.sp[0]-o.x,dz=o.sp[1]-o.z,dd=Math.hypot(dx,dz);if(dd>.4){const s=3.2*dt;o.x+=dx/dd*Math.min(s,dd);o.z+=dz/dd*Math.min(s,dd);o.ry=Math.atan2(dx,dz)}else if(o.lk)o.ry=o.lo;o.y=H(o.x,o.z);o.f=0}
-function botAI(q,o,dt,L,k){if(o.d)return;if(o.s){shelterWalk(o,dt);return}
+function botAI(q,o,dt,L,k){if(o.d)return;const P=ON?pickH(q,o):me;if(o.s){shelterWalk(o,dt);return}
   if(o.trap&&o.inH){trapTick(q,o,dt,L);return}
-  if(KS.st==='idle'&&kissOK(q,o,dt,L)){KS.k=q;KS.st='go';KS.t=0;KS.did=true;KS.bud=Math.hypot(me.x-o.x,me.z-o.z)+12;KS.ph=Math.random()<.5?'pre':'go';KS.pt=1.5+Math.random()*1.5}
+  if(!ON&&KS.st==='idle'&&kissOK(q,o,dt,L)){KS.k=q;KS.st='go';KS.t=0;KS.did=true;KS.bud=Math.hypot(P.x-o.x,P.z-o.z)+12;KS.ph=Math.random()<.5?'pre':'go';KS.pt=1.5+Math.random()*1.5}
   if(KS.k===q&&(KS.st==='go'||KS.st==='kiss')&&kissTick(o,dt,L))return;
  if(o.dgIn>0){o.dgIn-=dt;if(o.dgIn<=0)o.dgT=.8}if(o.dgT>0){o.dgT-=dt;o.z=clamp(o.z+o.dgd*7*dt,-RIV-1,RIV+3);o.pa=null;return}
- const bx_=me.x-o.x,bz_=me.z-o.z,bd=Math.hypot(bx_,bz_),db=dep(o.x,o.z,L),sfb=Math.max(0,1-sl(db)*(o.r?.2:1));
+ const bx_=P.x-o.x,bz_=P.z-o.z,bd=Math.hypot(bx_,bz_),db=dep(o.x,o.z,L),sfb=Math.max(0,1-sl(db)*(o.r?.2:1));
  const pb=db>=.95?(Math.abs(o.z)<RIV&&H(o.x,o.z)<0?Math.min(28,3.2*db):db*(1.2+2.2*k)*pfar(o.z)):0;o.x-=pb*(LKS[q]?.4:1)*dt;if(pb>0)col(o);
  o.f=db>=1.2?1:0;o.y=db>=1.2?L-.013*Math.max(0,Math.abs(o.z)-RIV)-1.2:H(o.x,o.z);
  o.dw=db>=1.75?(o.dw||0)+dt:Math.max(0,(o.dw||0)-dt*.5);
- if(o.dw>150){o.d=true;botsDead++;say('😢 Một người dân đã chết đuối!',2500);delete LKS[q];delete LKT[q];return}
+ if(o.dw>150){o.d=true;botsDead++;say('😢 Một người dân đã chết đuối!',2500);evSend({e:'dd'});delete LKS[q];delete LKT[q];return}
  if(Math.hypot(o.x-385,o.z-150)<22&&db<.95){o.s=true;delete LKS[q];delete LKT[q];return}
  if(seeLight(o,bd))o.seen=12;else if(o.seen>0)o.seen-=dt;
  if(o.tr){if(o.help||db>=.95)o.tr=false;else{o.trT-=dt*(bd<4?3:1);if(o.trT<=0){o.tr=false;o.fol=0}}}
  if(o.tr)return;
  if(o.trap&&!o.inH){if(LKS[q])o.trap=null;else{o.trapRun+=dt;if(Math.hypot(o.trap.ax-o.x,o.trap.az-o.z)<=7||o.trapRun>30){trapEnter(o);return}}}
  if(o.help){o.helpT-=dt;if(o.helpT<=0){o.help=false;o.mk.material.fog=true;o.mk.material.needsUpdate=true}
-  else if(bd<4){o.help=false;o.mk.material.fog=true;o.mk.material.needsUpdate=true;if(!me.ring){me.ring=true;say('Hãy nhận lấy chiếc phao',2500)}}
+  else if(bd<4){o.help=false;o.mk.material.fog=true;o.mk.material.needsUpdate=true;if(!P.ring)giveRing(P)}
   else return}
  let tx=null,tz=0,sp=SPD*.55*sfb,stop=5;
  if(o.trap){tx=o.trap.ax;tz=o.trap.az;sp=SPD*.9*sfb;stop=6.5}
   else if(LKS[q]&&LKT[q]!=null){const t=TR2[LKT[q]];o.t=LKT[q];tx=t.x;tz=t.z;sp=3;stop=3}
- else if(LKS[q]){if(o.runN&&!o.wait){tx=o.rw[0];tz=o.rw[1];sp=SPD*.9*sfb;stop=1.5;if(Math.hypot(tx-o.x,tz-o.z)<2.5)o.wait=true}else if(o.runN&&o.wait){if(bd<9){o.runN=false;o.wait=false}}else if(bd>3&&!(Math.abs(me.z)<RIV&&H(me.x,me.z)<0)){tx=me.x;tz=me.z;sp=db>=1.2?(nw(o)?3:1.2):5;stop=3}}
+ else if(LKS[q]){if(o.runN&&!o.wait){tx=o.rw[0];tz=o.rw[1];sp=SPD*.9*sfb;stop=1.5;if(Math.hypot(tx-o.x,tz-o.z)<2.5)o.wait=true}else if(o.runN&&o.wait){if(bd<9){o.runN=false;o.wait=false}}else if(bd>3&&!(Math.abs(P.z)<RIV&&H(P.x,P.z)<0)){tx=P.x;tz=P.z;sp=db>=1.2?(nw(o)?3:1.2):5;stop=3}}
  else{o.t=null;
   if(o.runN){if(!o.wait){tx=o.rw[0];tz=o.rw[1];sp=SPD*.9*sfb;stop=1.5;if(Math.hypot(tx-o.x,tz-o.z)<2.5)o.wait=true}else if(bd<9){o.runN=false;o.wait=false}}
   else if(o.x>290&&o.z>RIV&&db<.95){tx=385;tz=150;sp=SPD*.9*sfb;stop=0}
-  else if(bd<30||o.seen>0){o.bt=(o.bt||0)-dt;if(o.bt<=0){o.st=o.st==='p'?'f':(Math.random()<.3?'p':'f');o.bt=o.st==='p'?3+Math.random()*3:6+Math.random()*8}if(o.st!=='p'){tx=me.x;tz=me.z;sp=SPD*.8*sfb}}
+  else if(bd<30||o.seen>0){o.bt=(o.bt||0)-dt;if(o.bt<=0){o.st=o.st==='p'?'f':(Math.random()<.3?'p':'f');o.bt=o.st==='p'?3+Math.random()*3:6+Math.random()*8}if(o.st!=='p'){tx=P.x;tz=P.z;sp=SPD*.8*sfb}}
   else{let lead=null;for(const kk in others){const p=others[kk];if(p!==o&&p.bot&&!p.d&&!p.s&&!p.trap&&kk<q&&Math.hypot(p.x-o.x,p.z-o.z)<9)lead=p}
    if(lead){tx=lead.x;tz=lead.z;stop=4;sp=SPD*.6*sfb}
    else{if(!o.wp||Math.hypot(o.wp[0]-o.x,o.wp[1]-o.z)<5||(o.wt=(o.wt||0)+dt)>14){const sg=o.z<0?-1:1;o.wp=[-370+Math.random()*680,sg*(RIV+5+Math.random()*(zl(0)-RIV-30))];o.wt=0}tx=o.wp[0];tz=o.wp[1]}}}
- if(tx===me.x&&tz===me.z)o.fol=(o.fol||0)+dt;else if(!LKS[q]&&!(bd<30||o.seen>0))o.fol=0;
+ if(tx===P.x&&tz===P.z)o.fol=(o.fol||0)+dt;else if(!LKS[q]&&!(bd<30||o.seen>0))o.fol=0;
  sp*=(SK.panic&&onBr(o.x,o.z))?1.5:1;const px0=o.x,pz0=o.z;
- if(tx!=null){const dd=Math.hypot(tx-o.x,tz-o.z);if(dd>stop){let lim=(tx===me.x&&tz===me.z)?1.4:.8;if(LKS[q]&&LKT[q]==null&&tx===me.x&&Math.abs(o.z)>RIV+6)lim=4.5;
+ if(tx!=null){const dd=Math.hypot(tx-o.x,tz-o.z);if(dd>stop){let lim=(tx===P.x&&tz===P.z)?1.4:.8;if(LKS[q]&&LKT[q]==null&&tx===P.x&&Math.abs(o.z)>RIV+6)lim=4.5;
   o.pt=(o.pt||0)-dt;if(!o.pa||o.pt<=0||Math.hypot((o.pg?o.pg[0]:0)-tx,(o.pg?o.pg[1]:0)-tz)>8){o.pa=pathTo(o.x,o.z,tx,tz,L,lim);o.pg=[tx,tz];o.pt=1.5;o.pi=0}
   let wx=tx,wz=tz;if(o.pa&&o.pa.length){while(o.pi<o.pa.length-1&&Math.hypot(o.pa[o.pi][0]-o.x,o.pa[o.pi][1]-o.z)<3)o.pi++;wx=o.pa[o.pi][0];wz=o.pa[o.pi][1];if(o.pi>=o.pa.length-1&&dd<14){wx=tx;wz=tz}}
   const a0=Math.atan2(wx-o.x,wz-o.z)+(o.nd>0?(o.nd-=dt,o.ns*1.2):0);let ok=false;
   for(const da of[0,.8,-.8,1.6,-1.6]){const a=a0+da,ux=Math.sin(a),uz=Math.cos(a);if(dep(o.x+ux*3,o.z+uz*3,L)<lim||db>=lim){o.x+=ux*sp*dt;o.z+=uz*sp*dt;col(o);colT(o);o.ry=a;ok=true;break}}
   if(!ok)o.wp=null;
   o.sk=(o.sk||0)+dt;if(o.sk>.8){if(Math.hypot(o.x-(o.sx||0),o.z-(o.sz||0))<.5){o.pa=null;o.nd=1;o.ns=Math.random()<.5?1:-1}o.sk=0;o.sx=o.x;o.sz=o.z}}}
- if(LKS[q]&&LKT[q]==null){const nd=Math.hypot(me.x-o.x,me.z-o.z);if(nd>RLEN&&nd>Math.hypot(me.x-px0,me.z-pz0)){o.x=px0;o.z=pz0}}
+ if(LKS[q]&&LKT[q]==null){const nd=Math.hypot(P.x-o.x,P.z-o.z);if(nd>RLEN&&nd>Math.hypot(P.x-px0,P.z-pz0)){o.x=px0;o.z=pz0}}
  o.x=clamp(o.x,-399,399);o.z=clamp(o.z,-zl(o.x)+2,zl(o.x)-2);
  for(const kk in others){if(kk===q)continue;const p=others[kk];if(p.d||p.s||p.inH)continue;const sx=o.x-p.x,sz=o.z-p.z,sd=Math.hypot(sx,sz);if(sd<1&&sd>.001){o.x+=sx/sd*(1-sd)/2;o.z+=sz/sd*(1-sd)/2}}}
 function ringUp(g,has,fl){const rh=g.userData.rh;rh.visible=!!has;if(!has)return;rh.rotation.z+=((fl?0:.8)-rh.rotation.z)*.15;rh.position.y+=((fl?1.35:1.05)-rh.position.y)*.15}
@@ -451,8 +452,8 @@ function loop(now){requestAnimationFrame(loop);const dtR=PA?0:Math.min(.05,(now-
   me.fl=d>=1.2;me.dr=d>=1.2?Math.max(0,me.dr-dt):Math.min(180,me.dr+dt*.5);if(me.dr<=0||me.x<-396)die();
   for(const p of PK){if(p.m.visible&&!me.ring&&Math.hypot(p.x-me.x,p.z-me.z)<3.5){p.m.visible=false;me.ring=true;me.took=true;if(ON)ACT.pk.send(PK.indexOf(p))}}
   {const ins=Math.hypot(me.x-385,me.z-150)<22;if(ins&&!me.arr){me.arr=true;say('Bạn đã tới nơi an toàn',3000);if(!FLH&&!ON){FLH=true;FLT=true;$('fb').style.display='block';radio('Bạn được trang bị một chiếc đèn pin. Bấm 🔦 (hoặc phím F) để bật hoặc tắt.')}}me.s=ins}}
- if(!end&&!me.dead&&me.s){const bs_=Object.values(others).filter(o=>o.bot);if(bs_.length&&bs_.every(o=>o.s))finish('Bạn đã thành công, mọi người đều an toàn')}
- if(tt>GAME_T&&!end)finish(endMsg());
+ if(!ON&&!end&&!me.dead&&me.s){const bs_=Object.values(others).filter(o=>o.bot);if(bs_.length&&bs_.every(o=>o.s))finish('Bạn đã thành công, mọi người đều an toàn')}
+ if(!ON&&tt>GAME_T&&!end)finish(endMsg());
  me.y+=((d>=1.2?Sw-1.2:H(me.x,me.z))-me.y)*Math.min(1,dt*12);me.g.position.set(me.x,me.y,me.z);me.g.rotation.y=me.ry;Lw=L;setRope(me.rope,me.x,me.y,me.z,me.tie);ringUp(me.g,me.ring,me.fl);if(AIM&&(!me.ring||me.dead||FL||end||me.tie>=0)){AIM=false;aimHide()}BT=me.ring?(AIM?aimFrame(dt):bestT()):null;if(!AIM)aimHide();me.mk.visible=false;{const la=LKS[id],A=la&&LKT[id]==null&&others[la]?others[la].g.position:null;if(A)setLine(me.lrope,A.x,A.y+1.2,A.z,me.g.position.x,me.g.position.y+1.2,me.g.position.z);else me.lrope.visible=false}
  for(const o of PK)o.m.position.y=o.gy+.1*Math.sin(now/400+o.x);
  for(const q in others){const o=others[q];if(o.lx!=null){o.vx=(o.vx||0)*.8+((o.g.position.x-o.lx)/Math.max(dt,.001))*.2;o.vz=(o.vz||0)*.8+((o.g.position.z-o.lz)/Math.max(dt,.001))*.2}o.lx=o.g.position.x;o.lz=o.g.position.z}
@@ -464,15 +465,16 @@ function loop(now){requestAnimationFrame(loop);const dtR=PA?0:Math.min(.05,(now-
    for(const kk in others){const o=others[kk];if(o.d||o.s||o.r)continue;if(Math.hypot(fx-o.g.position.x,fz-o.g.position.z)<2.6&&Math.abs(fy-(o.g.position.y+1))<2.8){hit=kk;break}}
    if(!hit&&u>=1){me.ring=true;sc.remove(FL.m);FL=null;me.frope.visible=false}}
   if(FL){FL.m.position.set(fx,fy,fz);if(FL.ph===1)FL.m.rotation.x+=dt*8;setLine(me.frope,me.x,me.y+1.4,me.z,fx,fy,fz)}
-  if(hit){others[hit].r=1;LKS[hit]=id;sc.remove(FL.m);FL=null;me.frope.visible=false}}
- if(!ON&&!end)tireDirector(dt,L);
+  if(hit){others[hit].r=1;LKS[hit]=id;if(ON&&!ISHOST){ACT.ac.send({a:'hit',b:hit});pend(hit)}sc.remove(FL.m);FL=null;me.frope.visible=false}}
+ if((!ON||ISHOST)&&!end)tireDirector(dt,L);
  if(!ON&&go&&!end)sharkTick(dt,L);
- TPB=0;for(const q in others)if(others[q].bot)botAI(q,others[q],dt,L,k);
+ TPB=0;if(ON&&ISHOST){const hs=hlist();for(const b in LKS){const o=others[b];if(o&&o.bot){const h=hs.find(x=>x.pid===LKS[b]);if(!h||h.dead){delete LKS[b];delete LKT[b]}}}}
+ if(!ON||ISHOST){for(const q in others)if(others[q].bot)botAI(q,others[q],dt,L,k)}else for(const q in TP){const a=TP[q];if(Math.hypot(a[0]-me.x,a[1]-me.z)<4&&!me.dead)TPB=Math.max(TPB,a[2])}
  {const pb=$('pb');if(TPB>.01&&!end&&!me.dead){const v=new THREE.Vector3(me.x,me.y+2.7,me.z).project(cam);if(v.z<1){pb.style.display='block';pb.style.left=((v.x*.5+.5)*innerWidth-27)+'px';pb.style.top=((-v.y*.5+.5)*innerHeight)+'px';pb.firstChild.style.width=(TPB*100)+'%'}else pb.style.display='none'}else pb.style.display='none'}
  for(const q in others){const o=others[q];o.g.position.x+=(o.x-o.g.position.x)*.2;o.g.position.z+=(o.z-o.g.position.z)*.2;o.g.position.y+=(o.y-o.g.position.y)*.2;o.g.rotation.y=o.ry;o.g.visible=!o.d&&!o.inH;setRope(o.rope,o.g.position.x,o.g.position.y,o.g.position.z,o.t==null?-1:o.t);ringUp(o.g,o.r,o.f);o.mk.position.set(o.g.position.x,o.g.position.y+2.5,o.g.position.z);o.mk.visible=!o.human&&!o.d&&!o.inH;o.mk.rotation.y+=dt*2;o.mk.scale.setScalar(o.help?1.1+.3*Math.sin(now/200):(BT===q?1.12:.7));o.mk.material.color.setHex(o.help?0xff4444:(o.tr?0x7fd4ff:0xffe21a));if(o.bk){if(o.help){o.bk.position.set(o.g.position.x,o.g.position.y+30,o.g.position.z)}else{sc.remove(o.bk);o.bk=null}}{const la=LKS[q],A=la&&LKT[q]==null?(la===id?me.g.position:(others[la]&&others[la].g.position)):null;if(A)setLine(o.lrope,A.x,A.y+1.2,A.z,o.g.position.x,o.g.position.y+1.2,o.g.position.z);else o.lrope.visible=false}}
  for(const q in others)tireFx(others[q],now);
  {const wp=water.geometry.attributes.position;for(let v=0;v<wp.count;v++)wp.setY(v,L-.013*Math.max(0,Math.abs(wp.getZ(v))-RIV));wp.needsUpdate=true}fog.density=(.018+.051*k)*(1+.5*GU)*(FLT&&FLH?.7:1);fog.color.copy(C1).lerp(C2,k);sc.background.copy(fog.color);
- const c=me.dead?(Object.values(others).find(o=>!o.d)||me):me;if(AIM){rtn=false;lookT=0}else if(rtn){pitch=Math.max(-.4,pitch-dt*1.2);if(pitch<=-.38){rtn=false;lookT=0}}else if(pitch>0){lookT+=dt;if(lookT>=3)rtn=true}else lookT=0;
+ const c=me.dead?(Object.values(others).find(o=>o.human&&!o.d)||Object.values(others).find(o=>!o.d)||me):me;if(AIM){rtn=false;lookT=0}else if(rtn){pitch=Math.max(-.4,pitch-dt*1.2);if(pitch<=-.38){rtn=false;lookT=0}}else if(pitch>0){lookT+=dt;if(lookT>=3)rtn=true}else lookT=0;
  const co=Math.cos(pitch),sn=Math.sin(pitch),Rd=7;let bd=Rd*co;for(let q=1;q<=bd;q++){if(hh(c.x-Math.sin(yaw)*q,c.z-Math.cos(yaw)*q)>2){bd=Math.max(1.5,q-1);break}}
  const cx_=c.x-Math.sin(yaw)*bd,cz_=c.z-Math.cos(yaw)*bd,cy_=Math.max(c.y+1.3-sn*Rd,H(cx_,cz_)+.6);
  cam.position.set(cx_,cy_,cz_);cam.lookAt(cx_+Math.sin(yaw)*co*10,cy_+sn*10,cz_+Math.cos(yaw)*co*10);ren.render(sc,cam);
@@ -485,6 +487,7 @@ function loop(now){requestAnimationFrame(loop);const dtR=PA?0:Math.min(.05,(now-
  if(mapOn&&now-lm>200){lm=now;drawMap()}
  $('rp').style.display=canTie()?'block':'none';$('rt').style.display=canRet()?'block':'none';$('th').style.display=(me.ring&&!me.dead)?'block':'none';$('rl').style.display=(Object.keys(LKS).some(b=>b===id||LKS[b]===id)||canUntie())?'block':'none';$('hud').innerHTML=`🕖 ${clk(tt)} · 💧 ${d.toFixed(1)}m${ON?humHud():botHud()}`;
  if(ON&&ACT.pos&&now-sent>100){sent=now;ACT.pos.send({x:+me.x.toFixed(2),z:+me.z.toFixed(2),y:+me.y.toFixed(2),ry:+me.ry.toFixed(2),s:me.s,d:!!me.dead,f:me.fl?1:0,r:me.ring?1:0,t:me.tie})}
+ if(ON&&ISHOST&&ACT.st&&now-sentS>100){sentS=now;sendState()}
  if(ON&&!end)onlineCheck();
 }
 
@@ -500,8 +503,8 @@ async function joinNet(code){
  const T=await loadTY();if(!T){lob('Không tải được thư viện Trystero. Kiểm tra mạng rồi thử lại.');return false}
  SELF=T.selfId;const pw=$('pw').value.trim(),cfg={appId:APPID};if(pw)cfg.password=pw;
  RM=T.joinRoom(cfg,'r'+code,{onJoinError:()=>{if(!STARTED)lob('Không nối được với một người chơi (sai mật mã, hoặc mạng đang chặn kết nối trực tiếp).')}});
- ACT.lob=RM.makeAction('lob');ACT.go=RM.makeAction('go');ACT.pos=RM.makeAction('pos');ACT.pk=RM.makeAction('pk');
- ACT.lob.onMessage=onLob;ACT.go.onMessage=onGo;ACT.pos.onMessage=onPos;ACT.pk.onMessage=i=>{if(PK[i])PK[i].m.visible=false};
+ ACT.lob=RM.makeAction('lob');ACT.go=RM.makeAction('go');ACT.pos=RM.makeAction('pos');ACT.pk=RM.makeAction('pk');ACT.st=RM.makeAction('st');ACT.ev=RM.makeAction('ev');ACT.ac=RM.makeAction('ac');
+ ACT.lob.onMessage=onLob;ACT.go.onMessage=onGo;ACT.pos.onMessage=onPos;ACT.st.onMessage=onSt;ACT.ev.onMessage=onEv;ACT.ac.onMessage=onAc;ACT.pk.onMessage=i=>{if(PK[i])PK[i].m.visible=false};
  RM.onPeerJoin=p=>{if(ISHOST)onJoin(p);else ACT.lob&&ACT.lob.send({q:1},{target:p})};RM.onPeerLeave=onLeave;return true}
 function renderLob(){const rows=ROSTER.map((p,i)=>'Người chơi '+(i+1)+(p===HOSTID?' (chủ phòng)':'')+(p===SELF?' · bạn':'')).join('<br>');
  lob('Mã phòng: <b>'+ROOMCODE+'</b> · '+ROSTER.length+'/'+MAXP+'<br>'+rows+(ISHOST?(ROSTER.length<2?'<br><small>Chờ thêm người chơi (cần ít nhất 2)...</small>':''):'<br><small>Chờ chủ phòng bắt đầu...</small>'))}
@@ -527,10 +530,42 @@ async function createRoom(){dupFix=false;ISHOST=true;HOSTID=null;ROSTER=[];START
 function pickCols(n){const bh=[0,1,2,3,4,5,6].map(i=>{const o={};colr('bot'+i).getHSL(o);return o.h}),hs=[];
  for(let k=0;k<n;k++){let best=0,bs=-1;for(let t=0;t<300;t++){const h=Math.random(),m=Math.min(...[...bh,...hs].map(v=>{const d=Math.abs(v-h);return Math.min(d,1-d)}));if(m>bs){bs=m;best=h}}hs.push(best)}
  return hs.map(h=>[h,.6+Math.random()*.25,.46+Math.random()*.1])}
-function startOnline(sd,r,c){ON=true;seed=sd;ROSTER=r;COLS=c;me.x=SPX(r.indexOf(SELF));me.z=-155;clearTimeout(joinTO);begin()}
+function startOnline(sd,r,c){ON=true;id=SELF;GIFTMAX=1;NB=7-r.length;seed=sd;ROSTER=r;COLS=c;me.x=SPX(r.indexOf(SELF));me.z=-155;clearTimeout(joinTO);begin()}
 function mkHumans(){ROSTER.forEach((p,i)=>{if(p===SELF)return;const x=SPX(i),o=others[p]={human:true,g:mk(colAt(i)),rope:rp(),lrope:rp(),mk:mkMk(),x,z:-155,y:0,ry:Math.PI/2};o.g.position.set(x,0,-155)})}
-function humHud(){const hs=[me,...Object.values(others).filter(o=>o.human&&!o.left)];return '<br>👥 '+hs.filter(p=>p.s).length+'/'+hs.length+' đã an toàn'}
-function onlineCheck(){const hs=[me,...Object.values(others).filter(o=>o.human&&!o.left)];if(hs.every(p=>p===me?(me.dead||me.s):(p.d||p.s)))finish(endMsg())}
+function humHud(){const hs=[me,...Object.values(others).filter(o=>o.human&&!o.left)],bs=Object.values(others).filter(o=>o.bot);return '<br>👥 '+hs.filter(p=>p.s).length+'/'+hs.length+' · 👤 '+bs.filter(o=>o.s).length+'/'+bs.length}
+const pend=b=>{PEND[b]=performance.now()+800},r2=v=>Math.round(v*100)/100;
+function hlist(){const r=[{pid:id,isMe:true,x:me.x,z:me.z,y:me.y,ry:me.ry,dead:!!me.dead,s:!!me.s,ring:!!me.ring}];for(const k in others){const o=others[k];if(o.human&&!o.left)r.push({pid:k,x:o.x,z:o.z,y:o.y,ry:o.ry,dead:!!o.d,s:!!o.s,ring:!!o.r})}return r}
+function pickH(q,o){const hs=hlist(),al=hs.filter(h=>!h.dead);if(LKS[q]){const r=al.find(h=>h.pid===LKS[q]);if(r)return r}let b=null,bd=1e9;for(const h of al){const d=Math.hypot(h.x-o.x,h.z-o.z);if(d<bd){bd=d;b=h}}return b||hs[0]}
+function minHDist(o){let m=1e9;for(const h of hlist())if(!h.dead)m=Math.min(m,Math.hypot(o.x-h.x,o.z-h.z));return m}
+function giveRing(h){if(h===me||h.isMe){me.ring=true;say('Hãy nhận lấy chiếc phao',2500)}else if(ACT.ev)ACT.ev.send({e:'ring'},{target:h.pid})}
+function evSend(d){if(ON&&ISHOST&&ACT.ev)ACT.ev.send(d)}
+function sendState(){const b=[],tp={};for(const k in others){const o=others[k];if(!o.bot)continue;b.push([k,r2(o.x),r2(o.z),r2(o.y),r2(o.ry),o.f?1:0,o.s?1:0,o.d?1:0,o.r?1:0,o.tr?1:0,o.inH?1:0,o.help?1:0,o.trap?1:0,o.t==null?-1:o.t]);if(o.trap&&o.inH)tp[k]=[r2(o.trap.dx),r2(o.trap.dz),r2(o.trap.pr)]}
+ ACT.st.send({b,ls:LKS,lt:LKT,tp})}
+function onSt(d,m){if(ISHOST||m.peerId!==HOSTID)return;const now=performance.now();
+ for(const a of d.b){const o=others[a[0]];if(!o)continue;
+  if(!o.init){o.init=1;o.g.position.set(a[1],a[3],a[2])}
+  o.x=a[1];o.z=a[2];o.y=a[3];o.ry=a[4];o.f=a[5];o.s=!!a[6];o.d=!!a[7];
+  if(!(PEND[a[0]]>now)){o.r=a[8];o.t=a[13]<0?null:a[13]}
+  o.tr=!!a[9];o.inH=!!a[10];o.help=!!a[11];o.trap=a[12]?1:null;if(o.help&&!o.bk)o.bk=mkBk()}
+ const nl={},nt={};for(const b in d.ls)if(!(PEND[b]>now))nl[b]=d.ls[b];for(const b in d.lt)if(!(PEND[b]>now))nt[b]=d.lt[b];
+ for(const b in PEND)if(PEND[b]>now){if(LKS[b]!==undefined)nl[b]=LKS[b];if(LKT[b]!=null)nt[b]=LKT[b]}
+ LKS=nl;LKT=nt;TP=d.tp||{}}
+function onEv(d,m){if(ISHOST||m.peerId!==HOSTID)return;
+ if(d.e==='rad')trapRadio(d.ax,d.az);
+ else if(d.e==='dd')say('😢 Một người dân đã chết đuối!',2500);
+ else if(d.e==='ring'){if(!me.dead){me.ring=true;say('Hãy nhận lấy chiếc phao',2500)}}
+ else if(d.e==='fin'&&!end){ENDW=d.w;finish(endMsg())}}
+function onAc(d,m){if(ISHOST)applyAct(d,m.peerId)}
+function applyAct(a,pid){const o=others[a.b];if(!o||!o.bot)return;
+ if(a.a==='hit'){if(!o.d&&!o.s&&!o.r&&!LKS[a.b]){o.r=1;LKS[a.b]=pid}return}
+ if(LKS[a.b]!==pid)return;
+ if(a.a==='tie'){if(LKT[a.b]==null&&TR2[a.t]){LKT[a.b]=a.t;o.t=a.t}}
+ else if(a.a==='ret'){o.r=0;o.t=null;delete LKS[a.b];delete LKT[a.b]}
+ else if(a.a==='rel'){delete LKS[a.b];delete LKT[a.b]}}
+function hostFinish(w){sendState();ACT.ev.send({e:'fin',w});ENDW=w;finish(endMsg())}
+function onlineCheck(){if(!ISHOST||end)return;const bs=Object.values(others).filter(o=>o.bot),hs=hlist(),dead=bs.filter(o=>o.d).length,open=bs.filter(o=>!o.d&&!o.s).length;let w=null;
+ if(bs.length&&dead===bs.length)w='lost';else if(bs.length&&open===0)w='done';else if(hs.every(h=>h.dead))w='dead';else if(GT>GAME_T)w='time';
+ if(w)hostFinish(w)}
 $('bc').onclick=()=>{if(!RM)createRoom()};
 $('bj').onclick=async()=>{if(RM)return;const code=$('code').value.trim();if(!/^\d{4}$/.test(code)){lob('Nhập mã phòng gồm 4 chữ số.');return}
  ISHOST=false;HOSTID=null;ROSTER=[];STARTED=false;ROOMCODE=code;menuMode('lobby');lob('Đang tìm phòng '+code+'...');
@@ -556,7 +591,7 @@ $('mu').onclick=()=>{if(!AC)return;if(AC.state=='running'){AC.suspend();$('mu').
 $('mb').onclick=()=>{mapOn=!mapOn;$('mc').style.display=mapOn?'block':'none';if(mapOn)drawMap()};
 $('rp').onpointerdown=e=>{e.preventDefault();tieT()};
 $('rt').onpointerdown=e=>{e.preventDefault();retT()};
-$('rl').onpointerdown=e=>{e.preventDefault();if(canUntie()){untieT();return}{const b=rescuee()||(LKS[id]?id:null);if(b){delete LKS[b];delete LKT[b]}}};
+$('rl').onpointerdown=e=>{e.preventDefault();if(canUntie()){untieT();return}{const b=rescuee()||(LKS[id]?id:null);if(b){delete LKS[b];delete LKT[b];if(ON&&!ISHOST&&others[b]&&others[b].bot){ACT.ac.send({a:'rel',b});pend(b)}}}};
 $('th').onpointerdown=e=>{e.preventDefault();try{$('th').setPointerCapture(e.pointerId)}catch(_){}aimStart()};
 $('th').onpointerup=e=>{e.preventDefault();aimEnd()};$('th').onpointercancel=()=>{AIM=false;aimHide()};
 $('mp').onclick=()=>{showPos=!showPos;$('mp').style.opacity=showPos?1:.5;if(mapOn)drawMap()};
